@@ -1,222 +1,89 @@
+// src/data/content.ts
 export const divisionsData = {
   crowdfund: {
     name: "R3alm Crowdfund",
-    subtitle: "Capital Realm Networks",
-    description: "Crowdfunding Social Network Portal integrating crowdfunding with social media for enhanced engagement",
-    features: [
-      "Multi-category investments (startups, real estate, private equity)",
-      "Front/back-end management with full campaign oversight",
-      "FINRA/SEC compliance with comprehensive KYC/AML",
-      "Content management across all major social platforms",
-      "AI robo-advisory for personalized investment recommendations",
-      "Comprehensive investor education and resources",
-      "Advanced analytics and performance tracking"
-    ],
-    valueProposition: "Builds vibrant investor communities while simplifying the fundraising process for entrepreneurs and creators.",
-    appUrl: "https://crowdfund.r3alm.com",
-    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg"
+    subtitle: "Revolutionizing crowdfunding for real estate and innovative startups through tokenized investments.",
+    description: "A blockchain-powered platform enabling fractional ownership and global participation in high-yield opportunities.",
+    features: ["Tokenized Assets", "Global Access", "Automated Compliance"],
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
   },
   assets: {
     name: "R3alm Assets",
-    subtitle: "Token Estate",
-    description: "Property tokenization platform for residential, commercial, industrial, pooled, and mixed portfolios",
-    features: [
-      "Asset conversion to digital tokens with blockchain verification",
-      "Fractional ownership with transparent pricing",
-      "Comprehensive property management including rental distribution",
-      "Real-time reporting for ROI and dividend tracking",
-      "Interactive investor dashboard with portfolio analytics",
-      "Automated compliance with SEC Reg A+ requirements",
-      "Secondary market integration for liquidity"
-    ],
-    valueProposition: "Democratizes real estate investment through fractional access and transparent management tools.",
-    appUrl: "https://assets.r3alm.com",
-    image: "https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg"
+    subtitle: "Tokenizing real-world assets for seamless liquidity and ownership transfer.",
+    description: "Transform physical assets into digital tokens, unlocking new markets and investment strategies.",
+    features: ["RWA Tokenization", "Liquidity Pools", "Secure Custody"],
+    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800"
   },
   trade: {
     name: "R3alm Trade",
-    subtitle: "ArbitrageX Pro",
-    description: "AI-driven multi-market trading platform for arbitrage opportunities across global exchanges",
-    features: [
-      "Advanced trading bots (simple, triangular, cross-market)",
-      "Configurable risk metrics with real-time monitoring",
-      "Integration with major exchanges (Binance, Coinbase Pro, Kraken)",
-      "Real-time market data and advanced analytics",
-      "Portfolio tracking across multiple asset classes",
-      "Multiple wallet support (hot/cold/custodial)",
-      "Advanced order types including stop-loss and take-profit"
-    ],
-    valueProposition: "Maximizes returns through automated trading strategies while minimizing risks with intelligent algorithms.",
-    appUrl: "https://trade.r3alm.com",
-    image: "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg"
+    subtitle: "Decentralized exchange for digital and tokenized assets with zero-gas trading.",
+    description: "A next-gen DEX combining speed, security, and cross-chain interoperability for traders worldwide.",
+    features: ["Zero-Gas Trades", "Cross-Chain", "Advanced Analytics"],
+    image: "https://images.unsplash.com/photo-1641313335572-e6c4e9e0e986?w=800"
   },
   governance: {
     name: "R3alm Governance",
-    subtitle: "CorpGov",
-    description: "Corporate governance system for compliance, documents, and communication management",
-    features: [
-      "Secure storage for statutory documents with version control",
-      "Automated workflows for minutes and resolutions",
-      "Digital share registers with cap table management",
-      "FINRA/SEC integration for regulatory compliance",
-      "Automated reporting and filing capabilities",
-      "Board communication and voting systems",
-      "Document lifecycle management"
-    ],
-    valueProposition: "Centralizes corporate governance while reducing administrative overhead and ensuring compliance.",
-    appUrl: "https://governance.r3alm.com",
-    image: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg"
+    subtitle: "DAO toolkit for transparent, efficient community-driven decision making.",
+    description: "Empower communities with secure voting, proposal systems, and treasury management on blockchain.",
+    features: ["Secure Voting", "Proposal Tools", "Treasury Management"],
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"
   },
   connect: {
     name: "R3alm Connect",
-    subtitle: "Social Realm",
-    description: "Social media publishing platform for enhanced brand visibility and engagement",
-    features: [
-      "Centralized dashboard for content creation and scheduling",
-      "Multi-platform publishing with approval workflows",
-      "Advanced analytics for engagement and demographics",
-      "OAuth authentication with secure access controls",
-      "Automated backups and data encryption",
-      "Compliance monitoring for platform guidelines",
-      "Team collaboration and content approval systems"
-    ],
-    valueProposition: "Drives interaction and loyalty through integrated social media management and analytics.",
-    appUrl: "https://connect.r3alm.com",
-    image: "https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg"
+    subtitle: "Seamless wallet and identity solutions bridging Web2 and Web3 worlds.",
+    description: "User-friendly onboarding with social logins, biometric auth, and cross-app connectivity.",
+    features: ["Social Login", "Biometric Auth", "Cross-App Connect"],
+    image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800"
   }
 };
 
 export const productsData = {
-  insights: {
-    name: "R3alm Insights",
-    description: "AI-powered analytics platform for comprehensive portfolio analysis, market trends, and user behavior insights",
-    features: [
-      "Advanced data visualization with interactive charts",
-      "Predictive machine learning analytics",
-      "Custom report generation from multiple data sources",
-      "Real-time market trend analysis",
-      "User behavior pattern recognition",
-      "Risk assessment and portfolio optimization"
-    ],
-    benefits: [
-      "Data-driven investment decisions",
-      "Improved operational efficiency",
-      "Personalized investment insights",
-      "Risk mitigation strategies"
-    ],
-    synergy: "Enhances Trade predictions, provides Assets analytics, optimizes Connect content strategy, and delivers Governance metrics.",
-    appUrl: "https://insights.r3alm.com",
+  ventures: {
+    name: "R3alm Ventures",
+    subtitle: "Venture capital fund investing in early-stage Web3 innovators.",
+    description: "Curated portfolio of high-potential startups with token incentives for backers.",
+    status: "Beta",
+    features: ["Seed Investments", "Token Airdrops", "Mentorship Program"],
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800"
+  },
+  insurance: {
+    name: "R3alm Insurance",
+    subtitle: "Smart contract-based parametric insurance for crypto and real-world risks.",
+    description: "Automated claims, transparent premiums, and blockchain-verified coverage.",
     status: "Coming Soon",
-    image: "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg"
+    features: ["Parametric Triggers", "Automated Payouts", "Risk Pools"],
+    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800"
   },
-  defi: {
-    name: "R3alm DeFi",
-    description: "Decentralized finance platform for lending, borrowing, and yield farming with tokenized asset integration",
-    features: [
-      "Multi-blockchain DeFi protocol integration",
-      "Automated yield optimization strategies",
-      "Smart contracts for automated interest and collateral management",
-      "Liquidity pool participation",
-      "Cross-chain asset bridging",
-      "Governance token staking and rewards"
-    ],
-    benefits: [
-      "High yield opportunities with reduced fees",
-      "Increased asset liquidity",
-      "Passive income generation",
-      "Decentralized financial services"
-    ],
-    synergy: "Uses Assets as collateral, adds DeFi capabilities to Trade, enables decentralized crowdfunding, maintains compliance via Governance.",
-    appUrl: "https://defi.r3alm.com",
-    status: "Beta Access",
-    image: "https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg"
+  lending: {
+    name: "R3alm Lending",
+    subtitle: "Decentralized lending protocol with over-collateralized loans and yield farming.",
+    description: "Borrow against crypto holdings or earn yields on idle assets securely.",
+    status: "Beta",
+    features: ["Flash Loans", "Yield Farming", "Cross-Collateral"],
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800"
   },
-  wallet: {
-    name: "R3alm Wallet",
-    description: "Secure multi-asset wallet supporting cryptocurrencies, tokens, and NFTs across multiple blockchains",
-    features: [
-      "Multi-blockchain support (Ethereum, Solana, Polygon)",
-      "Advanced biometric and hardware security",
-      "One-click transaction capabilities",
-      "NFT gallery and management",
-      "DeFi protocol integration",
-      "Portfolio tracking and analytics"
-    ],
-    benefits: [
-      "Simplified asset management",
-      "Enhanced security and user control",
-      "Seamless transaction experience",
-      "Unified portfolio view"
-    ],
-    synergy: "Central hub for Assets holdings, Trade execution funds, DeFi collateral management, social payments via Connect, and secure transaction signing.",
-    appUrl: "https://wallet.r3alm.com",
+  analytics: {
+    name: "R3alm Analytics",
+    subtitle: "Real-time on-chain data dashboards and predictive insights for investors.",
+    description: "AI-powered analytics uncovering trends in DeFi, NFTs, and tokenomics.",
+    status: "Alpha",
+    features: ["On-Chain Metrics", "AI Predictions", "Custom Alerts"],
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800"
+  },
+  education: {
+    name: "R3alm Education",
+    subtitle: "Interactive Web3 academy with gamified courses and certification.",
+    description: "Learn blockchain, DeFi, and NFTs through hands-on modules and community challenges.",
     status: "Coming Soon",
-    image: "https://images.pexels.com/photos/164527/pexels-photo-164527.jpeg"
+    features: ["Gamified Learning", "NFT Certifications", "Community Quests"],
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800"
   },
-  collectibles: {
-    name: "R3alm Collectibles",
-    description: "Platform for tokenizing and trading digital and physical collectibles including art, memorabilia, and NFTs",
-    features: [
-      "NFT minting and marketplace functionality",
-      "Provenance verification and authentication",
-      "Secondary market integration with pricing analytics",
-      "Physical asset tokenization services",
-      "Royalty management for creators",
-      "Collection management tools"
-    ],
-    benefits: [
-      "New alternative investment opportunities",
-      "Fractional access to high-value collectibles",
-      "Revenue generation through trading fees and royalties",
-      "Verified authenticity and ownership"
-    ],
-    synergy: "Expands Assets beyond real estate, enables NFT arbitrage in Trade, provides crowdfunding for collectible projects, creates viral marketing opportunities via Connect.",
-    appUrl: "https://collectibles.r3alm.com",
-    status: "Beta Access",
-    image: "https://images.pexels.com/photos/1070945/pexels-photo-1070945.jpeg"
-  },
-  shield: {
-    name: "R3alm Shield",
-    description: "Comprehensive security and insurance platform protecting against cyber threats, asset loss, and market volatility",
-    features: [
-      "Decentralized insurance pools with community participation",
-      "AI-powered threat detection and prevention",
-      "Comprehensive risk assessment tools",
-      "Smart contract insurance policies",
-      "Multi-sig wallet protection",
-      "24/7 security monitoring"
-    ],
-    benefits: [
-      "Increased confidence in digital asset investments",
-      "Protection against various types of losses",
-      "Customizable coverage options",
-      "Community-driven insurance solutions"
-    ],
-    synergy: "Protects Assets and Trade activities, provides compliant reporting via Governance, integrates with Wallet security, offers insured DeFi lending.",
-    appUrl: "https://shield.r3alm.com",
-    status: "Coming Soon",
-    image: "https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg"
-  },
-  academy: {
-    name: "R3alm Academy",
-    description: "Educational platform providing comprehensive training on investment strategies, blockchain technology, and financial literacy",
-    features: [
-      "Interactive courses with blockchain technology certifications",
-      "AI-powered personalized learning paths",
-      "Community forums and peer-to-peer learning",
-      "Expert-led live sessions and workshops",
-      "Practical trading and investment simulations",
-      "Progress tracking and achievement systems"
-    ],
-    benefits: [
-      "Empowered investment decision-making",
-      "Increased user engagement and platform loyalty",
-      "Comprehensive blockchain and finance education",
-      "Community building and networking opportunities"
-    ],
-    synergy: "Complements Crowdfund education, provides in-depth knowledge for Assets and Trade, distributes content via Connect, offers governance training.",
-    appUrl: "https://academy.r3alm.com",
-    status: "Beta Access",
-    image: "https://images.pexels.com/photos/256490/pexels-photo-256490.jpeg"
+  payments: {
+    name: "R3alm Payments",
+    subtitle: "Instant, low-fee cross-border payments using stablecoins and layer-2 scaling.",
+    description: "Frictionless global transfers with fiat on/off ramps and merchant tools.",
+    status: "Alpha",
+    features: ["Stablecoin Rails", "Fiat Ramps", "Merchant API"],
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800"
   }
 };

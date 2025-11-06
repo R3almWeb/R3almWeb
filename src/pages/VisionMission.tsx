@@ -1,104 +1,143 @@
+// src/pages/VisionMission.tsx
 import React from 'react';
-import { Target, Eye, Compass, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 export function VisionMission() {
   return (
-    <div className="fade-in">
-      <section className="py-20 bg-gradient-to-br from-[#121212] to-[#1E1E1E]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Our <span className="gradient-text">Vision & Mission</span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Guiding principles that drive our commitment to democratizing wealth creation
-            </p>
-          </div>
+    <div className="min-h-screen bg-[#121212] text-white py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Navigation */}
+        <Link
+          to="/about"
+          className="inline-flex items-center text-[#00BFFF] hover:text-[#FFD700] mb-8 transition-colors duration-300"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          Back to About
+        </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
-            {/* Vision */}
-            <div className="glass-effect rounded-2xl p-12 scale-on-hover slide-up">
-              <div className="flex items-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#00BFFF] to-[#0099CC] rounded-full flex items-center justify-center mr-6 floating">
-                  <Eye className="h-8 w-8 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-[#FFD700] text-reveal">Our Vision</h2>
-              </div>
-              <p className="text-lg text-gray-300 leading-relaxed mb-6 text-reveal stagger-1">
-                To democratize wealth creation by providing innovative investment opportunities 
-                in real estate, startups, and digital assets through cutting-edge blockchain technology.
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-text">
+            Vision & Mission
+          </h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Our guiding principles that drive the R3alm ecosystem forward.
+          </p>
+        </div>
+
+        {/* Vision Section */}
+        <section className="mb-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-white mb-4">Our Vision</h2>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                To create a borderless financial world where every individual has equal access to wealth-building opportunities, 
+                powered by blockchain innovation and decentralized principles. We envision a future where traditional barriers 
+                to investment are eliminated, and global communities collaborate seamlessly to drive economic empowerment.
               </p>
-              <p className="text-gray-400 leading-relaxed text-reveal stagger-2">
-                We envision a world where financial opportunities are accessible to everyone, 
-                regardless of their background or starting capital. Through our integrated 
-                ecosystem, we're breaking down traditional barriers and creating new pathways 
-                to prosperity.
-              </p>
+              <ul className="space-y-2 text-gray-400">
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#00BFFF] rounded-full"></span>
+                  <span>Democratizing access to high-yield investments</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#00BFFF] rounded-full"></span>
+                  <span>Building trust through transparency and security</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#00BFFF] rounded-full"></span>
+                  <span>Fostering innovation in Web3 financial services</span>
+                </li>
+              </ul>
             </div>
-
-            {/* Mission */}
-            <div className="glass-effect rounded-2xl p-12 scale-on-hover slide-up stagger-1">
-              <div className="flex items-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-full flex items-center justify-center mr-6 floating stagger-1">
-                  <Target className="h-8 w-8 text-[#121212]" />
-                </div>
-                <h2 className="text-3xl font-bold text-[#00BFFF] text-reveal">Our Mission</h2>
+            <div className="relative">
+              <div className="glass-effect rounded-2xl p-8 h-full">
+                <img 
+                  src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600"
+                  alt="Vision Illustration"
+                  className="rounded-xl w-full h-64 object-cover mb-4"
+                />
+                <p className="text-center text-sm text-gray-400 italic">
+                  "Empowering the next generation of wealth creators."
+                </p>
               </div>
-              <p className="text-lg text-gray-300 leading-relaxed mb-6 text-reveal stagger-1">
-                To deliver secure, transparent, and scalable solutions with a focus on 
-                compliance and community engagement, empowering individuals to build wealth 
-                through Web3 innovation.
-              </p>
-              <p className="text-gray-400 leading-relaxed text-reveal stagger-2">
-                We are committed to maintaining the highest standards of security and regulatory 
-                compliance while fostering a supportive community that empowers our users to 
-                make informed investment decisions.
-              </p>
             </div>
           </div>
+        </section>
 
-          {/* Core Principles */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Our <span className="gradient-text">Core Principles</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              The fundamental beliefs that shape our approach to Web3 finance
-            </p>
+        {/* Mission Section */}
+        <section className="mb-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="relative order-2 lg:order-1">
+              <div className="glass-effect rounded-2xl p-8 h-full">
+                <img 
+                  src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600"
+                  alt="Mission Illustration"
+                  className="rounded-xl w-full h-64 object-cover mb-4"
+                />
+                <p className="text-center text-sm text-gray-400 italic">
+                  "Innovation meets integrity in every transaction."
+                </p>
+              </div>
+            </div>
+            <div className="space-y-6 order-1 lg:order-2">
+              <h2 className="text-3xl font-bold text-white mb-4">Our Mission</h2>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                To deliver cutting-edge financial products that integrate traditional finance with blockchain technology, 
+                ensuring compliance, security, and user-centric design. Through our subsidiaries and innovative solutions, 
+                we aim to educate, protect, and empower users to navigate the Web3 landscape with confidence.
+              </p>
+              <ul className="space-y-2 text-gray-400">
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#FFD700] rounded-full"></span>
+                  <span>Provide secure and scalable investment platforms</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#FFD700] rounded-full"></span>
+                  <span>Educate communities on decentralized finance</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-[#FFD700] rounded-full"></span>
+                  <span>Drive partnerships for ecosystem growth</span>
+                </li>
+              </ul>
+            </div>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Core Values */}
+        <section className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">Core Values</h2>
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                icon: Compass,
-                title: "Innovation-Driven",
-                description: "We continuously explore new technologies and methodologies to stay at the forefront of financial innovation."
-              },
-              {
-                icon: Star,
-                title: "Community-Centric",
-                description: "Our users are at the heart of everything we do. We build solutions that serve their needs and empower their success."
-              },
-              {
-                icon: Target,
-                title: "Results-Focused",
-                description: "We measure our success by the tangible value we create for our users and their financial outcomes."
-              },
-              {
-                icon: Eye,
-                title: "Transparency First",
-                description: "We believe in open communication, clear processes, and transparent fee structures in all our operations."
-              }
-            ].map((principle, index) => (
-              <div key={index} className={`glass-effect rounded-xl p-8 hover:bg-[#1E1E1E]/80 transition-all duration-300 scale-on-hover slide-up stagger-${index + 1}`}>
-                <principle.icon className="h-12 w-12 text-[#00BFFF] mb-6 floating" />
-                <h3 className="text-2xl font-bold text-white mb-4 text-reveal">{principle.title}</h3>
-                <p className="text-gray-300 leading-relaxed text-reveal stagger-1">{principle.description}</p>
+              { icon: '🔒', title: 'Security First', desc: 'Enterprise-grade protection for every asset and transaction.' },
+              { icon: '🌍', title: 'Global Inclusion', desc: 'Accessible tools for users worldwide, regardless of location.' },
+              { icon: '🚀', title: 'Innovation Driven', desc: 'Pioneering solutions that push the boundaries of Web3.' },
+              { icon: '🤝', title: 'Community Focused', desc: 'Empowering users through education and collaborative governance.' },
+              { icon: '⚖️', title: 'Compliance Centric', desc: 'Adhering to global regulations while embracing decentralization.' },
+              { icon: '📈', title: 'Growth Oriented', desc: 'Sustainable strategies for long-term value creation.' }
+            ].map((value, index) => (
+              <div key={index} className="glass-effect rounded-xl p-6 text-center scale-on-hover">
+                <div className="text-4xl mb-4">{value.icon}</div>
+                <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
+                <p className="text-gray-400 text-sm">{value.desc}</p>
               </div>
             ))}
           </div>
+        </section>
+
+        {/* CTA */}
+        <div className="text-center">
+          <Link
+            to="/products"
+            className="inline-flex items-center px-8 py-4 bg-[#00BFFF] text-white rounded-lg hover:bg-[#0099CC] transition-all duration-300 hover-glow"
+          >
+            Join Our Mission
+            <ArrowLeft className="h-5 w-5 ml-2 rotate-180" />
+          </Link>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

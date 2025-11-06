@@ -142,7 +142,7 @@ export function Home() {
               {Object.entries(divisionsData).slice(0, 3).map(([key, division], index) => (
                 <Link
                   key={key}
-                  to={`/divisions/${key}`}
+                  to={`/products/template/${key}`}
                   className="block group"
                 >
                   <div className={`glass-effect rounded-lg p-6 hover:bg-[#1E1E1E]/80 transition-all duration-300 scale-on-hover text-reveal stagger-${index + 1}`}>
@@ -162,7 +162,7 @@ export function Home() {
               {Object.entries(divisionsData).slice(3).map(([key, division], index) => (
                 <Link
                   key={key}
-                  to={`/divisions/${key}`}
+                  to={`/products/template/${key}`}
                   className="block group"
                 >
                   <div className={`glass-effect rounded-lg p-6 hover:bg-[#1E1E1E]/80 transition-all duration-300 scale-on-hover text-reveal stagger-${index + 1}`}>

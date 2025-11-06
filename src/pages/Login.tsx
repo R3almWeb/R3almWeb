@@ -1,140 +1,121 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
-interface LoginProps {
-  // Add props if needed
-}
-
-const Login: React.FC<LoginProps> = () => {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
-    setError(null);
 
     try {
-      console.log('Attempting login with email:', email);
       await login(email, password);
-      console.log('Login completed successfully');
       navigate('/admin/dashboard');
     } catch (err: any) {
-      console.error('Login failed:', err.message);
-      setError(err.message || 'Invalid credentials');
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
-  const showDemoCreds = import.meta.env.DEV; // Only in dev
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-white/5 p-8 rounded-lg border border-white/10">
-        <h1 className="text-2xl font-bold text-white mb-4">Admin Login</h1>
-        <p className="text-gray-300 mb-6">R3alm Portal Access</p>
+    <div className="min-h-screen bg-[#121212] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-bold text-white">Sign in to your account</h2>
+          <p className="mt-2 text-center text-sm text-gray-400">
+            Or{' '}
+            <Link to="/register" className="font-medium text-[#00BFFF] hover:text-[#FFD700]">
+              create a new account
+            </Link>
+          </p>
+        </div>
         {error && (
-          <div className="bg-red-500/20 border border-red-500 text-red-300 p-2 rounded mb-4">
+          <div className="bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@r3alm.com"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all mb-4"
-            required
-            disabled={loading}
-          />
-          <div className="relative mb-4">
-            <input
-              type={isPasswordVisible ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
-              className="w-full pl-4 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all"
-              required
-              disabled={loading}
-            />
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-500" />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="block w-full pl-10 pr-3 py-3 bg-[#1E1E1E] border border-[#333] rounded-lg placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-[#00BFFF] focus:border-transparent"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-500" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  className="block w-full pl-10 pr-10 py-3 bg-[#1E1E1E] border border-[#333] rounded-lg placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-[#00BFFF] focus:border-transparent"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div>
             <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors"
-              aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+              type="submit"
               disabled={loading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#00BFFF] hover:bg-[#0099CC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00BFFF] disabled:opacity-50 transition-all duration-300"
             >
-              {isPasswordVisible ? (
-                // Eye-slash SVG (hide)
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                  />
-                </svg>
-              ) : (
-                // Eye SVG (view)
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              )}
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-cyan-500 text-white py-3 rounded-lg hover:bg-cyan-600 transition-all disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-        {showDemoCreds && (
-          <div className="mt-4 text-sm text-gray-400">
-            <p>Demo Accounts:</p>
-            <p>admin@r3alm.com / admin123</p>
-            <p>editor@r3alm.com / editor123</p>
+
+          <div className="text-center">
+            <Link
+              to="/register"
+              className="font-medium text-[#00BFFF] hover:text-[#FFD700] transition-colors duration-300"
+            >
+              Forgot your password?
+            </Link>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
-};
-
-export { Login };
+}
