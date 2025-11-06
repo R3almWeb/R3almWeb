@@ -1,107 +1,141 @@
-// src/pages/Login.tsx
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
-export function Login() {
+interface LoginProps {
+  // Add props if needed
+}
+
+const Login: React.FC<LoginProps> = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { user, login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as any)?.from?.pathname || '/admin/dashboard';
-
-  // Auto-redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate('/admin/dashboard', { replace: true });
-    }
-  }, [user, navigate]);
+  const [error, setError] = useState<string | null>(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+    setError(null);
 
-    // === DEMO CREDENTIALS (replace later with real auth) ===
-    if (email === 'admin@r3alm.com' && password === 'r3alm2025') {
-      login({
-        uid: 'admin123',
-        email: 'admin@r3alm.com',
-        role: 'ADMIN',
-        displayName: 'R3alm Admin',
-      });
-      navigate(from, { replace: true });
-      return;
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.toLowerCase().trim(),
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message);
+    } else if (data.user) {
+      // Successful login - redirect to dashboard (or update AuthContext if integrated)
+      navigate('/dashboard');
     }
 
-    if (email === 'editor@r3alm.com' && password === 'editor123') {
-      login({
-        uid: 'editor456',
-        email: 'editor@r3alm.com',
-        role: 'EDITOR',
-        displayName: 'Editor',
-      });
-      navigate(from, { replace: true });
-      return;
-    }
-
-    setError('Invalid credentials');
     setLoading(false);
   };
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const showDemoCreds = import.meta.env.DEV; // Only in dev
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121212] px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold gradient-text mb-2">Admin Login</h1>
-          <p className="text-gray-400">R3alm Portal Access</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="glass-effect rounded-2xl p-8 space-y-6">
-          {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 text-red-400 text-center">
-              {error}
-            </div>
-          )}
-
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="bg-white/5 p-8 rounded-lg border border-white/10">
+        <h1 className="text-2xl font-bold text-white mb-4">Admin Login</h1>
+        <p className="text-gray-300 mb-6">R3alm Portal Access</p>
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-300 p-2 rounded mb-4">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="admin@r3alm.com"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all"
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all mb-4"
             required
             disabled={loading}
           />
-
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="r3alm2025"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all"
-            required
-            disabled={loading}
-          />
-
+          <div className="relative mb-4">
+            <input
+              type={isPasswordVisible ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              className="w-full pl-4 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 outline-none transition-all"
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors"
+              aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+              disabled={loading}
+            >
+              {isPasswordVisible ? (
+                // Eye-slash SVG (hide)
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                  />
+                </svg>
+              ) : (
+                // Eye SVG (view)
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-lg disabled:opacity-70"
+            className="w-full bg-cyan-500 text-white py-3 rounded-lg hover:bg-cyan-600 transition-all disabled:opacity-50"
           >
-            {loading ? 'Logging in...' : 'Login to Admin Portal'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-
-          <div className="text-center text-sm text-gray-500 space-y-1">
-            <p>Demo Accounts:</p>
-            <p className="font-mono text-cyan-400">admin@r3alm.com / r3alm2025</p>
-            <p className="font-mono text-cyan-400">editor@r3alm.com / editor123</p>
-          </div>
         </form>
+        {showDemoCreds && (
+          <div className="mt-4 text-sm text-gray-400">
+            <p>Demo Accounts:</p>
+            <p>admin@r3alm.com / admin123</p>
+            <p>editor@r3alm.com / editor123</p>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export { Login };
