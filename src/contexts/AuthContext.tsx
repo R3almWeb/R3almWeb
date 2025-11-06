@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user from localStorage on mount (persists across refreshes + tabs)
   useEffect(() => {
     try {
       const saved = localStorage.getItem('r3alm_user');
@@ -35,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(parsed);
       }
     } catch (err) {
-      console.error('Failed to load user from storage', err);
+      console.error('Failed to load user', err);
       localStorage.removeItem('r3alm_user');
     } finally {
       setIsLoading(false);
@@ -52,15 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('r3alm_user');
   };
 
-  // Prevent flash of unprotected content
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#121212]">
-        <div className="text-4xl font-bold gradient-text loading-dots">R3ALM</div>
-      </div>
-    );
-  }
-
+  // ALWAYS render children — never block the app
   return (
     <AuthContext.Provider value={{ user, login, logout, isLoading }}>
       {children}
