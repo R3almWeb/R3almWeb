@@ -21,9 +21,12 @@ const Login: React.FC<LoginProps> = () => {
     setError(null);
 
     try {
+      console.log('Attempting login with email:', email);
       await login(email, password);
+      console.log('Login completed successfully');
       navigate('/admin/dashboard');
     } catch (err: any) {
+      console.error('Login failed:', err.message);
       setError(err.message || 'Invalid credentials');
     } finally {
       setLoading(false);

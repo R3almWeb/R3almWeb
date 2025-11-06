@@ -30,16 +30,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check initial session
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      await updateUserFromSession(session);
-      setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Session check error:', error.message);
+        }
+        await updateUserFromSession(session);
+      } catch (err) {
+        console.error('Unexpected session check error:', err);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     checkSession();
 
     // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      await updateUserFromSession(session);
+      try {
+        await updateUserFromSession(session);
+      } catch (err) {
+        console.error('Auth state change error:', err);
+      }
     });
 
     return () => {
@@ -49,25 +61,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUserFromSession = async (session: any) => {
     if (session?.user) {
-      const { data: userData, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Failed to get user data', error);
+      try {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error('Get user error:', userError.message);
+          throw userError;
+        }
+
+        const metadata = userData.user.user_metadata || {};
+        const role = metadata.role || 'USER';
+
+        const newUser: User = {
+          uid: session.user.id,
+          email: session.user.email || '',
+          role: role as 'ADMIN' | 'EDITOR' | 'USER',
+          displayName: metadata.displayName,
+        };
+
+        setUser(newUser);
+        localStorage.setItem('r3alm_user', JSON.stringify(newUser));
+      } catch (err: any) {
+        console.error('Update user error:', err.message);
         setUser(null);
-        return;
       }
-
-      const metadata = userData.user.user_metadata || {};
-      const role = metadata.role || 'USER'; // Default to USER if no role
-
-      const newUser: User = {
-        uid: session.user.id,
-        email: session.user.email || '',
-        role: role as 'ADMIN' | 'EDITOR' | 'USER',
-        displayName: metadata.displayName,
-      };
-
-      setUser(newUser);
-      localStorage.setItem('r3alm_user', JSON.stringify(newUser));
     } else {
       setUser(null);
       localStorage.removeItem('r3alm_user');
@@ -75,21 +91,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase().trim(),
-      password,
-    });
-    if (error) throw error;
-    // onAuthStateChange will handle setting the user
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password,
+      });
+      if (error) {
+        console.error('Login error:', error.message);
+        throw error;
+      }
+      console.log('Login successful:', data);
+      // Listener will handle user update
+    } catch (err: any) {
+      console.error('Unexpected login error:', err);
+      throw err;
+    }
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error('Logout error', error);
-    // onAuthStateChange will handle clearing the user
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error.message);
+        throw error;
+      }
+      // Listener will handle clearing user
+    } catch (err: any) {
+      console.error('Unexpected logout error:', err);
+    }
   };
 
-  // ALWAYS render children — never block the app
   return (
     <AuthContext.Provider value={{ user, login, logout, isLoading }}>
       {children}
