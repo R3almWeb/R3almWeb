@@ -4,6 +4,35 @@ import { Eye, EyeOff, Hexagon, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { demoAccounts } from '../data/demoAccounts';
 
+
+{/* ==== DEMO USER CREATOR BUTTON (ADD THIS) ==== */}
+<div className="text-center mb-6">
+  <button
+    onClick={async () => {
+      const { supabase } = await import('../lib/supabase');
+      const demos = [
+        { email: 'admin@r3alm.com', password: 'admin123', role: 'ADMIN' },
+        { email: 'editor@r3alm.com', password: 'editor123', role: 'EDITOR' },
+        { email: 'user@r3alm.com', password: 'user123', role: 'USER' },
+      ];
+      for (const d of demos) {
+        const { error } = await supabase.auth.signUp({
+          email: d.email,
+          password: d.password,
+          options: { data: { role: d.role } },
+        });
+        if (error && !error.message.includes('already registered')) {
+          alert('Error: ' + d.email + ' – ' + error.message);
+        }
+      }
+      alert('All demo accounts created! You can now log in.');
+    }}
+    className="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-700 font-bold"
+  >
+    CREATE DEMO USERS (Click Once)
+  </button>
+</div>
+
 export function Login() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
