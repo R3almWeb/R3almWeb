@@ -1,182 +1,100 @@
 // src/pages/Login.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const demoAccounts = [
-  { email: 'admin@r3alm.com',  password: 'admin123',  label: 'Admin Login' },
-  { email: 'editor@r3alm.com', password: 'editor123', label: 'Editor Login' },
-  { email: 'user@r3alm.com',   password: 'user123',   label: 'User Login' },
-];
-
-export const Login = () => {
+export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const { signIn } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/admin/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    try {
-      await signIn(email, password);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Invalid login credentials');
-    } finally {
-      setLoading(false);
+    // === DEMO ADMIN CREDENTIALS (replace with real Firebase/Supabase later) ===
+    if (email === 'admin@r3alm.com' && password === 'r3alm2025') {
+      login({
+        uid: 'admin123',
+        email: 'admin@r3alm.com',
+        role: 'ADMIN',
+        displayName: 'R3alm Admin',
+      });
+      navigate(from, { replace: true });
+      return;
     }
-  };
 
-  const handleDemoLogin = async (email: string, password: string) => {
-    setLoading(true);
-    setError('');
-    try {
-      await signIn(email, password);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Demo login failed');
-    } finally {
-      setLoading(false);
+    if (email === 'editor@r3alm.com' && password === 'editor123') {
+      login({
+        uid: 'editor456',
+        email: 'editor@r3alm.com',
+        role: 'EDITOR',
+        displayName: 'Content Editor',
+      });
+      navigate(from, { replace: true });
+      return;
     }
+
+    setError('Invalid credentials. Try admin@r3alm.com / r3alm2025');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-[#121212] px-4">
       <div className="w-full max-w-md">
-        {/* Logo / Title */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold gradient-text mb-2">R3alm</h1>
-          <p className="text-gray-400">Sign in to continue</p>
+          <h1 className="text-4xl font-bold gradient-text mb-2">Admin Login</h1>
+          <p className="text-gray-400">R3alm Content Portal</p>
         </div>
 
-        {/* Demo User Creator Button - NOW WITH EMAIL CONFIRM BYPASS */}
-        <div className="text-center mb-8">
-          <button
-            onClick={async () => {
-              const { supabase } = await import('../lib/supabase');
-              const demos = [
-                { email: 'admin@r3alm.com', password: 'admin123', role: 'ADMIN' },
-                { email: 'editor@r3alm.com', password: 'editor123', role: 'EDITOR' },
-                { email: 'user@r3alm.com', password: 'user123', role: 'USER' },
-              ];
-
-              for (const d of demos) {
-                // Sign up (creates or skips if exists)
-                let { error } = await supabase.auth.signUp({
-                  email: d.email,
-                  password: d.password,
-                  options: { data: { role: d.role } },
-                });
-
-                if (error && !error.message.includes('already registered')) {
-                  alert('Error creating ' + d.email + ': ' + error.message);
-                  return;
-                }
-
-                // If user exists but email not confirmed, confirm it automatically
-                if (error && error.message.includes('already registered')) {
-                  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-                    email: d.email,
-                    password: d.password,
-                  });
-
-                  if (signInError && signInError.message.includes('email not confirmed')) {
-                    // Auto-confirm the email using admin API (requires service_role key - see note below)
-                    // For dev, we'll use a workaround: resend confirmation + auto-confirm via SQL if needed
-                    // But easiest: use magic link or disable confirmation
-                    alert(`Warning: ${d.email} exists but email not confirmed. Fixing...`);
-
-                    // WORKAROUND: Resend confirmation and tell user to check (or disable in Supabase)
-                    await supabase.auth.resend({
-                      type: 'signup',
-                      email: d.email,
-                    });
-                  }
-                }
-              }
-              alert('All demo accounts ready! Emails auto-confirmed for dev. You can now log in.');
-            }}
-            className="px-8 py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition"
-          >
-            CREATE & CONFIRM DEMO USERS (Click Once)
-          </button>
-          <p className="text-xs text-gray-500 mt-2">
-            This bypasses email confirmation for testing
-          </p>
-        </div>
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="glass-effect rounded-xl p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="glass-effect rounded-2xl p-8 space-y-6">
           {error && (
-            <div className="bg-red-900 bg-opacity-50 border border-red-600 text-red-200 px-4 py-3 rounded">
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 text-red-400 text-center">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 focus:outline-none transition-all"
+              placeholder="admin@r3alm.com"
               required
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-cyan-500 focus:outline-none transition-all"
+              placeholder="r3alm2025"
               required
-              placeholder="••••••••"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover-glow disabled:opacity-50"
+            className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-lg hover:shadow-cyan-500/25"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            Login to Admin Portal
           </button>
-        </form>
 
-        {/* Demo Buttons */}
-        <div className="mt-10">
-          <p className="text-center text-gray-400 mb-4">Or use a demo account:</p>
-          <div className="grid gap-3">
-            {demoAccounts.map((acc) => (
-              <button
-                key={acc.email}
-                onClick={() => handleDemoLogin(acc.email, acc.password)}
-                disabled={loading}
-                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover-glow transition disabled:opacity-50"
-              >
-                {acc.label} ({acc.email})
-              </button>
-            ))}
+          <div className="text-center text-sm text-gray-500 mt-6">
+            <p>Demo Accounts:</p>
+            <p className="font-mono text-cyan-400">admin@r3alm.com / r3alm2025</p>
+            <p className="font-mono text-cyan-400">editor@r3alm.com / editor123</p>
           </div>
-        </div>
-
-        {/* Register Link */}
-        <p className="text-center mt-8 text-gray-400">
-          No account?{' '}
-          <button onClick={() => navigate('/register')} className="text-cyan-400 hover:text-cyan-300 underline">
-            Register
-          </button>
-        </p>
+        </form>
       </div>
     </div>
   );
-};
+}
