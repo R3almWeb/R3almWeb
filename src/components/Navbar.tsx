@@ -1,320 +1,187 @@
-import React, { useState, useEffect } from 'react';
+// src/components/Navbar.tsx
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Hexagon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  HomeIcon,
+  InformationCircleIcon,
+  CubeIcon,
+  PencilSquareIcon,
+  QuestionMarkCircleIcon,
+  ClockIcon,
+  EnvelopeIcon,
+  HomeModernIcon,
+  DocumentTextIcon,
+  UsersIcon,
+  Cog6ToothIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 
-export function Navbar() {
+export const Navbar = () => {
   const { user, signOut } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
 
-  // When menu opens, expand all dropdowns
-  useEffect(() => {
-    if (isOpen) {
-      // Set all dropdowns as active when menu opens
-      setActiveDropdown('all');
-    } else {
-      setActiveDropdown(null);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const toggleCollapse = () => setCollapsed(!collapsed);
 
   const menuItems = [
-    { name: 'Home', path: '/' },
-    { 
-      name: 'About Us', 
-      path: '/about',
-      dropdown: [
-        { name: 'Vision & Mission', path: '/about/vision-mission' },
-        { name: 'Strategic Partnerships', path: '/about/partnerships' },
-        { name: 'Technical Architecture', path: '/about/architecture' }
-      ]
-    },
-    {
-      name: 'Products',
-      path: '/products',
-      dropdown: [
-        { name: 'R3alm Crowdfund', path: '/products/crowdfund' },
-        { name: 'R3alm Assets', path: '/products/assets' },
-        { name: 'R3alm Trade', path: '/products/trade' },
-        { name: 'R3alm Governance', path: '/products/governance' },
-        { name: 'R3alm Connect', path: '/products/connect' }
-      ]
-    },
-    {
-      name: 'Pipeline',
-      dropdown: [
-        { name: 'R3alm Insights', path: '/products-dev/insights' },
-        { name: 'R3alm DeFi', path: '/products-dev/defi' },
-        { name: 'R3alm Wallet', path: '/products-dev/wallet' },
-        { name: 'R3alm Collectibles', path: '/products-dev/collectibles' },
-        { name: 'R3alm Shield', path: '/products-dev/shield' },
-        { name: 'R3alm Academy', path: '/products-dev/academy' }
-      ]
-    },
-    { name: 'Blog', path: '/blog' },
-    { name: 'FAQ', path: '/faq' },
-    { name: 'Waitlist', path: '/waitlist' },
-    { name: 'Contact', path: '/contact' }
+    { path: '/', label: 'Home', icon: HomeIcon },
+    { path: '/about', label: 'About', icon: InformationCircleIcon },
+    { path: '/products', label: 'Products', icon: CubeIcon },
+    { path: '/blog', label: 'Blog', icon: PencilSquareIcon },
+    { path: '/faq', label: 'FAQ', icon: QuestionMarkCircleIcon },
+    { path: '/waitlist', label: 'Waitlist', icon: ClockIcon },
+    { path: '/contact', label: 'Contact', icon: EnvelopeIcon },
+  ];
+
+  const adminItems = [
+    { path: '/admin/dashboard', label: 'Dashboard', icon: HomeModernIcon },
+    { path: '/admin/blog', label: 'Blog Manager', icon: DocumentTextIcon },
+    { path: '/admin/faq-manager', label: 'FAQ Manager', icon: QuestionMarkCircleIcon },
+    { path: '/admin/waitlist', label: 'Waitlist Manager', icon: ClockIcon },
+    { path: '/admin/users', label: 'User Manager', icon: UsersIcon },
+    { path: '/admin/settings', label: 'Settings', icon: Cog6ToothIcon },
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled ? 'bg-[#121212]/95 backdrop-blur-md' : 'bg-transparent'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <Hexagon className="h-10 w-10 text-[#00BFFF] group-hover:text-[#FFD700] transition-all duration-300 group-hover:rotate-180" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-bold text-white">R3</span>
-              </div>
-            </div>
-            <span className="text-2xl font-bold gradient-text">Capital R3alm</span>
-          </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <div key={item.name} className="relative group">
-                {item.dropdown ? (
-                  <div
-                    className="flex items-center space-x-1 cursor-pointer py-2 text-white hover:text-[#00BFFF] transition-all duration-300 hover:scale-105"
-                    onMouseEnter={() => setActiveDropdown(item.name)}
-                    onMouseLeave={() => setActiveDropdown(null)}
-                  >
-                    <span className="font-medium">{item.name}</span>
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
-                    
-                    {/* Dropdown */}
-                    {activeDropdown === item.name && (
-                      <div className="absolute top-full left-0 mt-2 w-64 glass-effect rounded-lg shadow-xl py-2 z-50 slide-up">
-                        {item.dropdown.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.path}
-                            to={dropdownItem.path}
-                            className="block px-4 py-3 text-white hover:text-[#00BFFF] hover:bg-white/5 transition-all duration-300 hover:translate-x-2"
-                          >
-                            {dropdownItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    to={item.path}
-                    className={`font-medium transition-all duration-300 hover:scale-105 ${
-                      location.pathname === item.path
-                        ? 'text-[#00BFFF]'
-                        : 'text-white hover:text-[#00BFFF]'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                )}
-              </div>
-            ))}
-            
-            <div className="flex items-center space-x-4 ml-8">
-              {user ? (
-                <div className="flex items-center space-x-4">
-                  {(user.role === 'admin' || user.role === 'editor') && (
-                    <Link
-                      to="/admin/dashboard"
-                      className="text-[#FFD700] hover:text-[#00BFFF] transition-all duration-300 hover:scale-105"
-                    >
-                      Admin
-                    </Link>
-                  )}
-                  <button
-                    onClick={signOut}
-                    className="text-white hover:text-[#00BFFF] transition-all duration-300 hover:scale-105"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="text-white hover:text-[#00BFFF] transition-all duration-300 hover:scale-105"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="px-6 py-2 bg-[#00BFFF] text-white rounded-lg hover:bg-[#0099CC] transition-all duration-300 hover-glow button-magnetic"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden text-white hover:text-[#00BFFF] transition-colors duration-300"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Slide-out Menu */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#121212] transform transition-transform duration-300 ease-in-out lg:hidden ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      } border-r border-white/10 shadow-2xl`}>
-        <div className="h-full overflow-y-auto">
-          {/* Menu Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/20 bg-[#1E1E1E] sticky top-0 z-10">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Hexagon className="h-8 w-8 text-[#00BFFF]" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white">R3</span>
-                </div>
-              </div>
-              <span className="text-xl font-bold gradient-text">Capital R3alm</span>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-[#00BFFF] transition-colors duration-300"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-
-          {/* Menu Items */}
-          <div className="px-6 py-4 space-y-2">
-            {menuItems.map((item) => (
-              <div key={item.name} className="border-b border-white/5 pb-2 mb-2 last:border-b-0">
-                {item.dropdown ? (
-                  <div>
-                    <div className="flex items-center">
-                      <Link
-                        to={item.path || '#'}
-                        className={`flex-1 py-3 px-3 rounded-lg font-medium transition-all duration-300 ${
-                          location.pathname === item.path
-                            ? 'text-[#00BFFF] bg-[#00BFFF]/20 border border-[#00BFFF]/30'
-                            : 'text-white hover:text-[#00BFFF] hover:bg-[#1E1E1E]/60'
-                        }`}
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                      <button
-                        className="p-3 text-white hover:text-[#00BFFF] hover:bg-[#1E1E1E]/60 rounded-lg transition-all duration-300"
-                        onClick={() => setActiveDropdown(activeDropdown === 'all' ? null : 'all')}
-                      >
-                        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${
-                          activeDropdown === 'all' ? 'rotate-180' : ''
-                        }`} />
-                      </button>
-                    </div>
-                    {activeDropdown === 'all' && (
-                      <div className="ml-4 mt-2 space-y-1 slide-up">
-                        {item.dropdown.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.path}
-                            to={dropdownItem.path}
-                            className="block py-2 px-3 text-gray-300 hover:text-[#00BFFF] hover:bg-[#1E1E1E]/60 rounded-lg transition-all duration-300 text-sm"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {dropdownItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    to={item.path}
-                    className={`block py-3 px-3 rounded-lg font-medium transition-all duration-300 ${
-                      location.pathname === item.path
-                        ? 'text-[#00BFFF] bg-[#00BFFF]/20 border border-[#00BFFF]/30'
-                        : 'text-white hover:text-[#00BFFF] hover:bg-[#1E1E1E]/60'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* User Section */}
-          <div className="border-t border-white/20 p-6 space-y-3 bg-[#1E1E1E] mt-auto">
-            {user ? (
-              <div className="space-y-2">
-                <div className="text-center py-3 px-4 bg-[#121212] rounded-lg border border-white/10">
-                  <div className="text-sm text-[#FFD700] font-medium">Welcome back</div>
-                  <div className="font-semibold text-white">{user.name || user.email}</div>
-                  <div className="text-xs text-gray-400 capitalize">{user.role} Account</div>
-                </div>
-                
-                {(user.role === 'admin' || user.role === 'editor') && (
-                  <Link
-                    to="/admin/dashboard"
-                    className="block w-full py-3 px-4 text-center text-[#FFD700] hover:text-[#00BFFF] bg-[#121212] hover:bg-[#1E1E1E] rounded-lg transition-all duration-300 font-medium border border-[#FFD700]/30 hover:border-[#00BFFF]/50"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
-                <button
-                  onClick={() => {
-                    signOut();
-                    setIsOpen(false);
-                  }}
-                  className="w-full py-3 px-4 text-red-400 hover:text-red-300 bg-[#121212] hover:bg-red-500/10 rounded-lg transition-all duration-300 font-medium border border-red-500/30 hover:border-red-400/50"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Link
-                  to="/login"
-                  className="block w-full py-3 px-4 text-center text-white hover:text-[#00BFFF] bg-[#121212] hover:bg-[#1E1E1E] rounded-lg transition-all duration-300 font-medium border border-white/30 hover:border-[#00BFFF]/50"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="block w-full py-3 px-4 bg-[#00BFFF] text-white text-center rounded-lg hover:bg-[#0099CC] transition-all duration-300 font-medium border border-[#00BFFF]/50"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Register
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Overlay */}
-      {isOpen && (
+    <>
+      {/* Mobile backdrop */}
+      {!collapsed && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-70 z-40 lg:hidden"
+          onClick={toggleCollapse}
         />
       )}
-    </nav>
+
+      {/* Sidebar */}
+      <nav
+        className={`fixed top-0 left-0 h-full bg-gray-950 border-r border-gray-800 z-50 transition-all duration-300 ease-in-out flex flex-col font-['Inter_var',system-ui,sans-serif]
+          ${collapsed ? 'w-20' : 'w-64'}
+          lg:w-64
+        `}
+      >
+        {/* Header with toggle */}
+        <div className="flex items-center justify-between p-5 border-b border-gray-800">
+          <h1
+            className={`font-bold text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent transition-all ${
+              collapsed ? 'opacity-0 w-0' : 'opacity-100'
+            }`}
+          >
+            R3alm
+          </h1>
+          <button
+            onClick={toggleCollapse}
+            className="text-gray-400 hover:text-white transition-all lg:block"
+            aria-label="Toggle menu"
+          >
+            {collapsed ? <ChevronRightIcon className="w-6 h-6" /> : <ChevronLeftIcon className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Scrollable menu */}
+        <div className="flex-1 overflow-y-auto py-4">
+          <ul className="space-y-0.5 px-3">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium
+                      ${isActive ? 'bg-cyan-500/10 text-cyan-400 shadow-lg shadow-cyan-500/20' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'}
+                    `}
+                    onClick={() => window.innerWidth < 1024 && setCollapsed(true)}
+                  >
+                    <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-cyan-400' : 'text-gray-500'}`} />
+                    <span className={`ml-3 transition-all ${collapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+                      {item.label}
+                    </span>
+                    {collapsed && (
+                      <span className="absolute left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800">
+                        {item.label}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Admin Section */}
+          {user && (user.role === 'EDITOR' || user.role === 'ADMIN') && (
+            <>
+              <div className={`my-4 mx-3 border-t border-gray-800 ${collapsed ? 'opacity-0' : ''}`} />
+              <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-6 transition-all ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
+                Admin
+              </p>
+              <ul className="space-y-0.5 px-3">
+                {adminItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname.startsWith(item.path);
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium
+                          ${isActive ? 'bg-cyan-500/10 text-cyan-400 shadow-lg shadow-cyan-500/20' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'}
+                        `}
+                        onClick={() => window.innerWidth < 1024 && setCollapsed(true)}
+                      >
+                        <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-cyan-400' : 'text-gray-500'}`} />
+                        <span className={`ml-3 transition-all ${collapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+                          {item.label}
+                        </span>
+                        {collapsed && (
+                          <span className="absolute left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800">
+                            {item.label}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+        </div>
+
+        {/* User footer */}
+        <div className="p-4 border-t border-gray-800">
+          {user ? (
+            <div className="space-y-3">
+              <div className={`text-xs ${collapsed ? 'hidden' : 'block'}`}>
+                <p className="text-gray-500">Signed in as</p>
+                <p className="font-medium text-cyan-400 truncate">{user.email}</p>
+                <p className="text-xs text-gray-500">Role: {user.role}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="w-full py-2.5 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition text-sm font-medium flex items-center justify-center"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                </svg>
+                {collapsed ? '' : 'Sign Out'}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Link
+                to="/login"
+                className="block text-center py-2.5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition text-sm font-medium"
+                onClick={() => setCollapsed(true)}
+              >
+                Login
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Content padding - prevents overlap */}
+      <div className={`transition-all duration-300 ${collapsed ? 'lg:pl-20' : 'lg:pl-64'} min-h-screen`} />
+    </>
   );
-}
+};
