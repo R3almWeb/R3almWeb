@@ -1,224 +1,155 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Hexagon, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { demoAccounts } from '../data/demoAccounts';
 
+const demoAccounts = [
+  { email: 'admin@r3alm.com',  password: 'admin123',  label: 'Admin Login' },
+  { email: 'editor@r3alm.com', password: 'editor123', label: 'Editor Login' },
+  { email: 'user@r3alm.com',   password: 'user123',   label: 'User Login' },
+];
 
-{/* ==== DEMO USER CREATOR BUTTON (ADD THIS) ==== */}
-<div className="text-center mb-6">
-  <button
-    onClick={async () => {
-      const { supabase } = await import('../lib/supabase');
-      const demos = [
-        { email: 'admin@r3alm.com', password: 'admin123', role: 'ADMIN' },
-        { email: 'editor@r3alm.com', password: 'editor123', role: 'EDITOR' },
-        { email: 'user@r3alm.com', password: 'user123', role: 'USER' },
-      ];
-      for (const d of demos) {
-        const { error } = await supabase.auth.signUp({
-          email: d.email,
-          password: d.password,
-          options: { data: { role: d.role } },
-        });
-        if (error && !error.message.includes('already registered')) {
-          alert('Error: ' + d.email + ' – ' + error.message);
-        }
-      }
-      alert('All demo accounts created! You can now log in.');
-    }}
-    className="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-700 font-bold"
-  >
-    CREATE DEMO USERS (Click Once)
-  </button>
-</div>
-
-export function Login() {
-  const navigate = useNavigate();
-  const { signIn } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
+export const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-    
-    const { user, error } = await signIn(formData.email, formData.password);
-    
-    if (error) {
-      setError(error);
-    } else if (user) {
-      if (user.role === 'admin' || user.role === 'editor') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/');
-      }
+    setLoading(true);
+
+    try {
+      await signIn(email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message || 'Invalid login credentials');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  const handleDemoLogin = async (email: string, password: string) => {
+    setLoading(true);
+    setError('');
+    try {
+      await signIn(email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message || 'Demo login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="fade-in bg-gradient-to-br from-[#121212] to-[#1E1E1E] blockchain-grid">
-      {/* Mobile-first container with guaranteed scroll space */}
-      <div className="min-h-screen w-full px-4 py-4 pb-96">
-        <div className="w-full max-w-md mx-auto">
-          <div className="glass-effect rounded-2xl p-6 scale-on-hover">
-            {/* Logo */}
-            <div className="text-center mb-6 text-reveal">
-              <div className="flex items-center justify-center space-x-3 mb-4">
-                <div className="relative">
-                  <Hexagon className="h-12 w-12 text-[#00BFFF] floating" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-bold text-white">R3</span>
-                  </div>
-                </div>
-                <span className="text-2xl font-bold gradient-text">Capital R3alm</span>
-              </div>
-              <h1 className="text-3xl font-bold text-white mb-2 text-reveal stagger-1">Welcome Back</h1>
-              <p className="text-gray-400 text-reveal stagger-2">Sign in to your account to continue</p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-900">
+      <div className="w-full max-w-md">
+        {/* Logo / Title */}
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold gradient-text mb-2">R3alm</h1>
+          <p className="text-gray-400">Sign in to continue</p>
+        </div>
+
+        {/* Demo User Creator Button */}
+        <div className="text-center mb-8">
+          <button
+            onClick={async () => {
+              const { supabase } = await import('../lib/supabase');
+              const demos = [
+                { email: 'admin@r3alm.com', password: 'admin123', role: 'ADMIN' },
+                { email: 'editor@r3alm.com', password: 'editor123', role: 'EDITOR' },
+                { email: 'user@r3alm.com', password: 'user123', role: 'USER' },
+              ];
+              for (const d of demos) {
+                const { error } = await supabase.auth.signUp({
+                  email: d.email,
+                  password: d.password,
+                  options: { data: { role: d.role } },
+                });
+                if (error && !error.message.includes('already registered')) {
+                  alert('Error creating ' + d.email + ': ' + error.message);
+                  return;
+                }
+              }
+              alert('All demo accounts created/ready! You can now log in.');
+            }}
+            className="px-8 py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition"
+          >
+            CREATE DEMO USERS (Click Once)
+          </button>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} className="glass-effect rounded-xl p-8 space-y-6">
+          {error && (
+            <div className="bg-red-900 bg-opacity-50 border border-red-600 text-red-200 px-4 py-3 rounded">
+              {error}
             </div>
+          )}
 
-            {/* Demo Accounts - Compact Mobile Version */}
-            <div className="glass-effect rounded-xl p-4 mb-6 text-reveal stagger-1">
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-bold text-white mb-2">Try Our Platform</h3>
-                <p className="text-gray-400 text-sm">Select a demo account to explore</p>
-              </div>
-              <div className="space-y-3">
-                {Object.entries(demoAccounts).map(([role, account]) => (
-                  <button
-                    key={role}
-                    onClick={() => setFormData({ email: account.email, password: account.password })}
-                    className="w-full p-3 bg-gradient-to-br from-[#1E1E1E] to-[#2A2A2A] rounded-lg hover:from-[#2A2A2A] hover:to-[#333] transition-all duration-300 border border-[#333] hover:border-[#00BFFF]/50 flex items-center space-x-3"
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                      role === 'admin' ? 'bg-gradient-to-br from-red-500 to-red-600' : 
-                      role === 'editor' ? 'bg-gradient-to-br from-yellow-500 to-yellow-600' : 
-                      'bg-gradient-to-br from-green-500 to-green-600'
-                    }`}>
-                      {role.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="text-white font-semibold capitalize">{role}</div>
-                      <div className="text-gray-400 text-sm truncate">{account.email}</div>
-                    </div>
-                    <div className={`w-3 h-3 rounded-full ${
-                      role === 'admin' ? 'bg-red-500' : 
-                      role === 'editor' ? 'bg-yellow-500' : 
-                      'bg-green-500'
-                    }`}></div>
-                  </button>
-                ))}
-              </div>
-              <div className="mt-4 text-center">
-                <p className="text-xs text-gray-500">
-                  Click any account above to auto-fill login credentials
-                </p>
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@example.com"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-center">
-                {error}
-              </div>
-            )}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 slide-up stagger-1">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-400 focus:border-[#00BFFF] focus:outline-none transition-all duration-300 focus:scale-105"
-                  placeholder="your@email.com"
-                />
-              </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover-glow disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-400 focus:border-[#00BFFF] focus:outline-none transition-all duration-300 pr-12 focus:scale-105"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-300"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded bg-[#1E1E1E] border-[#333] text-[#00BFFF] focus:ring-[#00BFFF]" />
-                  <span className="ml-2 text-sm text-gray-300">Remember me</span>
-                </label>
-                <a href="#" className="text-sm text-[#00BFFF] hover:text-[#FFD700] transition-colors duration-300">
-                  Forgot password?
-                </a>
-              </div>
-
+        {/* Demo Buttons */}
+        <div className="mt-10">
+          <p className="text-center text-gray-400 mb-4">Or use a demo account:</p>
+          <div className="grid gap-3">
+            {demoAccounts.map((acc) => (
               <button
-                type="submit"
+                key={acc.email}
+                onClick={() => handleDemoLogin(acc.email, acc.password)}
                 disabled={loading}
-                className="w-full px-6 py-4 bg-[#00BFFF] text-white rounded-lg hover:bg-[#0099CC] transition-all duration-300 hover-glow button-magnetic flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover-glow transition disabled:opacity-50"
               >
-                <span className="text-lg font-semibold">{loading ? 'Signing In...' : 'Sign In'}</span>
-                <ArrowRight className="h-5 w-5" />
+                {acc.label} ({acc.email})
               </button>
-            </form>
-
-            <div className="text-center mt-6 text-reveal stagger-2">
-              <p className="text-gray-400">
-                Don't have an account?{' '}
-                <Link to="/register" className="text-[#00BFFF] hover:text-[#FFD700] transition-colors duration-300 font-medium">
-                  Create Account
-                </Link>
-              </p>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-[#333] text-reveal stagger-3">
-              <p className="text-center text-sm text-gray-400">
-                By signing in, you agree to our{' '}
-                <a href="#" className="text-[#00BFFF] hover:text-[#FFD700] transition-colors duration-300">Terms of Service</a>
-                {' '}and{' '}
-                <a href="#" className="text-[#00BFFF] hover:text-[#FFD700] transition-colors duration-300">Privacy Policy</a>
-              </p>
-            </div>
+            ))}
           </div>
         </div>
+
+        {/* Register Link */}
+        <p className="text-center mt-8 text-gray-400">
+          No account?{' '}
+          <button onClick={() => navigate('/register')} className="text-cyan-400 hover:text-cyan-300 underline">
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );
-}
+};
