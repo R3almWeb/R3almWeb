@@ -1,138 +1,111 @@
 ```markdown
-# R3almWeb – Modern SaaS Dashboard with Role-Based Auth
+# R3almWeb - Modern SaaS Dashboard Starter
 
-![R3alm Preview](https://i.imgur.com/EXAMPLE_PREVIEW.png)  
-*(Professional collapsible sidebar • Supabase Auth • Tailwind CSS • Vite + React)*
+R3almWeb is a production-ready boilerplate for building modern SaaS dashboards, admin panels, or internal tools. It features role-based authentication with Supabase, a sleek collapsible sidebar (inspired by x.ai/Grok designs), responsive layouts, and one-click demo user creation for development.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-StackBlitz-FF4B4B?style=for-the-badge&logo=stackblitz)](https://r3almweb-5r05--5173--cf284e50.local-credentialless.webcontainer.io)
-[![GitHub](https://img.shields.io/badge/GitHub-Repo-181717?style=for-the-badge&logo=github)](https://github.com/R3almWeb/R3almWeb)
-[![React](https://img.shields.io/badge/React-18.3+-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org)
-[![Vite](https://img.shields.io/badge/Vite-5.4+-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth_&_DB-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
-[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
+Key highlights:
+- **Role-Based Access Control (RBAC)**: Secure routes and actions based on user roles (ADMIN, EDITOR, USER).
+- **Collapsible Sidebar**: Persistent state, hover tooltips, active indicators, and mobile-friendly.
+- **Demo Users**: Instant creation without email confirmation for quick testing.
+- **Responsive Design**: Mobile-first with Tailwind CSS and glassmorphism effects.
 
-**R3alm** is a production-ready full-stack web app built with **React 18 + TypeScript + Vite**, **Supabase** (Auth + PostgreSQL), and **Tailwind CSS**. It features a sleek **x.ai/Grok-inspired collapsible sidebar**, role-based access control, real-time demo user creation, and fully responsive design.
+Live Demo: [StackBlitz Preview](https://r3almweb-5r05--5173--cf284e50.local-credentialless.webcontainer.io)  
+Demo Credentials:  
+- Admin: admin@r3alm.com / admin123  
+- Editor: editor@r3alm.com / editor123
 
-> Perfect starter template for SaaS dashboards, admin panels, or internal tools.
+## Features
 
-## 🚀 Live Demo
+- **Authentication & Authorization**: Supabase-powered login/register with role metadata enforcement.
+- **Admin Dashboard**: Comprehensive CMS tools including:
+  - User Manager: CRUD for users with role assignment.
+  - Blog Manager: CRUD for articles with rich text support.
+  - FAQ Manager: Manage frequently asked questions.
+  - Product/Pipeline Managers: For SaaS-specific workflows.
+  - **New**: Page Manager for static/dynamic pages (CRUD with status toggles).
+  - **New**: Media Library for centralized asset uploads/deletions (Supabase Storage integration).
+  - **New**: Category Manager for taxonomy (auto-slug, descriptions).
+- **UI Components**: Reusable Navbar, Footer, ProtectedRoute, DeleteModal (confirmation dialog).
+- **State Management**: React Context for auth; localStorage for sidebar persistence.
+- **Performance**: Vite HMR for fast dev; inline SVGs to minimize dependencies.
+- **Security**: Env vars for Supabase keys; no hardcoded secrets; RLS policies recommended.
+- **Debugging**: Added logs and timeouts to auth flows for reliability.
 
-**Instant Play:** https://r3almweb-5r05--5173--cf284e50.local-credentialless.webcontainer.io  
-(StackBlitz – no install needed)
+## Technology Stack
 
-### Demo Credentials (click "CREATE DEMO USERS" on login page first)
-| Role   | Email                  | Password   |
-|--------|------------------------|------------|
-| Admin  | `admin@r3alm.com`      | `admin123` |
-| Editor | `editor@r3alm.com`     | `editor123`|
-| User   | `user@r3alm.com`       | `user123`  |
+| Category      | Tools/Tech                     |
+|---------------|--------------------------------|
+| Frontend     | React 18, TypeScript, Vite 5+ |
+| Routing      | React Router DOM v6            |
+| Auth/DB      | Supabase (Auth + PostgreSQL + Storage) |
+| Styling      | Tailwind CSS v3.4+ (custom themes) |
+| Icons        | Inline SVGs (Heroicons style)  |
+| State        | React Context, localStorage    |
+| Build/Lint   | ESLint, PostCSS                |
 
-## ✨ Key Features
+## Quick Start
 
-- **Role-Based Access Control** (stored in Supabase user metadata)
-  - `ADMIN`: Full dashboard + user/blog/FAQ/waitlist managers
-  - `EDITOR`: Limited admin tools
-  - `USER`: Standard protected views
-- **Professional Collapsible Sidebar**
-  - Persistent state (`localStorage`)
-  - Full-area clickable links (even when collapsed)
-  - Smooth tooltips on hover
-  - Inline SVG icons (zero dependencies)
-  - Active route glow + shadow
-  - Mobile backdrop + auto-close
-- **One-Click Demo Users** (bypasses email confirmation for dev)
-- **Responsive Layout** (mobile-first, no content overlap)
-- **Modern Tech Stack**
-  - Vite 5+ (blazing fast HMR)
-  - React Router DOM v6
-  - Supabase Auth + Client
-  - Tailwind CSS v3.4+ with custom gradients
-  - TypeScript for type safety
-
-## 🛠️ Tech Stack
-
-```text
-Frontend:  React 18 + TypeScript + Vite
-Routing:   React Router DOM v6
-Auth/DB:   Supabase (Auth + PostgreSQL)
-Styling:   Tailwind CSS + custom glassmorphism
-Icons:     Inline SVGs (Heroicons style)
-State:     React Context + localStorage
-```
-
-## 📂 Project Structure
-
-```bash
-src/
-├── components/          # Navbar, UI components
-├── contexts/            # AuthContext.tsx (Supabase wrapper)
-├── lib/                 # supabase.ts client
-├── pages/               # All routes
-│   ├── Login.tsx
-│   ├── Home.tsx
-│   ├── About.tsx
-│   └── admin/*.tsx      # Protected admin pages
-├── App.tsx              # <Routes> definition
-├── main.tsx             # BrowserRouter + AuthProvider
-└── index.css            # Tailwind base + globals
-```
-
-## 🚀 Getting Started
-
-### Option 1: StackBlitz (Instant)
-1. Open: https://stackblitz.com/edit/r3almweb-5r05
-2. Click **"CREATE DEMO USERS"** on `/login`
-3. Log in as Admin → Explore!
-
-### Option 2: Local Development
-
-```bash
-git clone https://github.com/R3almWeb/R3almWeb.git
-cd R3almWeb
-npm install
-npm run dev
-```
-
-### Supabase Setup
-1. Create free project at [supabase.com](https://supabase.com)
-2. Create `.env.local`:
-   ```env
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key
+1. **Clone the Repo**:
    ```
-3. (Recommended) Disable email confirmation: **Authentication → Settings → Confirm email → OFF**
+   git clone https://github.com/R3almWeb/R3almWeb.git
+   cd R3almWeb
+   ```
 
-## 🛳 Deployment
+2. **Install Dependencies**:
+   ```
+   npm install
+   ```
 
-- **Vercel / Netlify**: Connect GitHub repo → auto-deploy
-- **StackBlitz**: Already live forever!
+3. **Setup Environment**:
+   - Create `.env.local` in root:
+     ```
+     VITE_SUPABASE_URL=your_supabase_url
+     VITE_SUPABASE_ANON_KEY=your_anon_key
+     ```
+   - In Supabase: Disable email confirmations for dev (Project Settings > Auth).
+   - Create tables: `pages` (id, title, slug, content, status, updated_at), `media` (id, filename, url, type, uploaded_by, created_at), `categories` (id, name, slug, description).
+   - Setup Row Level Security (RLS) policies for roles.
 
-## 🤝 Contributing
+4. **Run Locally**:
+   ```
+   npm run dev
+   ```
+   Open http://localhost:5173. Use demo creds to login.
 
-1. Fork repo
-2. Create feature branch (`git checkout -b feature/cool-thing`)
-3. Commit (`git commit -m 'Add cool thing'`)
-4. Push & open PR
+   **Note on StackBlitz/Web-based IDEs**: You may see platform warnings (e.g., Contextify, bad Node option, iframe sandbox, preload delays). These are harmless and disappear in local Node v20+ env. Recommend local dev for clean console.
 
-## 📄 License
+5. **Build for Production**:
+   ```
+   npm run build
+   ```
 
-[MIT License](LICENSE) – free to use, modify, and distribute.
+## Deployment
 
----
+- **Vercel/Netlify**: Deploy as static site; set env vars in platform dashboard.
+- **StackBlitz**: Instant preview (as in demo link)—great for sharing.
 
-**Built with ❤️ by the StackBlitz + Supabase community**
+## Contributing
 
-⭐ **Star this repo if you found it useful!**  
-🚀 **Fork & deploy your own version in seconds**
+- Fork the repo and create a PR.
+- Follow conventional commits (e.g., `feat: add new manager`).
+- Add tests for new features (Vitest recommended).
 
-*Last updated: November 05, 2025*
-```
+## License
 
-### How to Add This README.md
-1. In StackBlitz → **Create new file** → name: `README.md`
-2. Paste **everything above**
-3. Save → Commit & Push to GitHub
-4. Done! Your repo now looks **professional** with badges, tables, and live demo.
+MIT License - see [LICENSE](LICENSE) for details.
 
-Want a dark-mode banner image or GitHub Actions workflow? Just say! 🚀
+## Recent Changes
+
+**v0.1.8 - Auth Timeouts & Env Checks (November 06, 2025)**
+
+### Added
+- **Env Validation**: In supabase.ts, check for missing VITE_ env vars and throw/log early to catch setup issues.
+- **Timeouts**: 10s timeouts on all Supabase auth calls in AuthContext.tsx to avoid hangs.
+
+### Fixed
+- **Login Hang**: Timeouts ensure loading resets even on failed calls; improved debugging for env/network problems.
+
+**Commit Message**: `fix(auth): add timeouts to Supabase calls + env var checks to prevent hangs (#9)`
+
+For full history, see commits.
 ```
