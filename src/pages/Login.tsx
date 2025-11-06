@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
   // Add props if needed
 }
 
 const Login: React.FC<LoginProps> = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,19 +20,14 @@ const Login: React.FC<LoginProps> = () => {
     setLoading(true);
     setError(null);
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase().trim(),
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message);
-    } else if (data.user) {
-      // Successful login - redirect to admin dashboard (or update AuthContext if integrated)
+    try {
+      await login(email, password);
       navigate('/admin/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const togglePasswordVisibility = () => {
