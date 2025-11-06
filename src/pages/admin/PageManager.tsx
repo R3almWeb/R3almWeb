@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import DeleteModal from '../../../components/DeleteModal'; // Reuse existing
+import { DeleteModal } from '../../components/DeleteModal'; // Reuse existing
 
 interface Page {
   id: string;

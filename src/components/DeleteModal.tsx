@@ -34,4 +34,4 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, onConfirm, t
   );
 };
 
-export default DeleteModal;
+export { DeleteModal };
