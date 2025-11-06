@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -27,17 +26,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const timeoutPromise = (ms: number, errorMsg: string) => new Promise((_, reject) => setTimeout(() => reject(new Error(errorMsg)), ms));
+
   useEffect(() => {
-    // Check initial session
+    // Check initial session with timeout
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error } = await Promise.race([
+          supabase.auth.getSession(),
+          timeoutPromise(10000, 'Session check timed out')
+        ]) as any;
         if (error) {
           console.error('Session check error:', error.message);
         }
         await updateUserFromSession(session);
-      } catch (err) {
-        console.error('Unexpected session check error:', err);
+      } catch (err: any) {
+        console.error('Unexpected session check error:', err.message);
       } finally {
         setIsLoading(false);
       }
@@ -49,8 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
         await updateUserFromSession(session);
-      } catch (err) {
-        console.error('Auth state change error:', err);
+      } catch (err: any) {
+        console.error('Auth state change error:', err.message);
       }
     });
 
@@ -62,7 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateUserFromSession = async (session: any) => {
     if (session?.user) {
       try {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const { data: userData, error: userError } = await Promise.race([
+          supabase.auth.getUser(),
+          timeoutPromise(10000, 'Get user timed out')
+        ]) as any;
         if (userError) {
           console.error('Get user error:', userError.message);
           throw userError;
@@ -92,10 +99,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase().trim(),
-        password,
-      });
+      const { data, error } = await Promise.race([
+        supabase.auth.signInWithPassword({
+          email: email.toLowerCase().trim(),
+          password,
+        }),
+        timeoutPromise(10000, 'Login timed out')
+      ]) as any;
       if (error) {
         console.error('Login error:', error.message);
         throw error;
@@ -103,21 +113,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Login successful:', data);
       // Listener will handle user update
     } catch (err: any) {
-      console.error('Unexpected login error:', err);
+      console.error('Unexpected login error:', err.message);
       throw err;
     }
   };
 
   const logout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await Promise.race([
+        supabase.auth.signOut(),
+        timeoutPromise(10000, 'Logout timed out')
+      ]) as any;
       if (error) {
         console.error('Logout error:', error.message);
         throw error;
       }
       // Listener will handle clearing user
     } catch (err: any) {
-      console.error('Unexpected logout error:', err);
+      console.error('Unexpected logout error:', err.message);
     }
   };
 
