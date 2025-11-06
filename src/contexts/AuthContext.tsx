@@ -1,166 +1,71 @@
 // src/contexts/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
-import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// === Types ===
-type Role = 'USER' | 'EDITOR' | 'ADMIN';
-
-interface AppUser {
-  id: string;
+interface User {
+  uid: string;
   email: string;
-  role: Role;
-  metadata: Record<string, any>;
+  role: 'ADMIN' | 'EDITOR' | 'USER';
+  displayName?: string;
 }
 
-interface AuthContextValue {
-  user: AppUser | null;
-  loading: boolean;
-  signUp: (email: string, password: string, metadata?: Partial<AppUser>) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateRole: (role: Role) => Promise<void>;
+interface AuthContextType {
+  user: User | null;
+  login: (userData: User) => void;
+  logout: () => void;
+  isLoading: boolean;
 }
 
-// === Context ===
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: () => {},
+  logout: () => {},
+  isLoading: true,
+});
 
-// === Helper: Convert Supabase User to AppUser ===
-const mapSupabaseUser = (sbUser: SupabaseUser | null): AppUser | null => {
-  if (!sbUser) return null;
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const metadata = sbUser.user_metadata || {};
-  const role = (metadata.role as Role) || 'USER';
-
-  return {
-    id: sbUser.id,
-    email: sbUser.email || '',
-    role,
-    metadata,
-  };
-};
-
-// === Provider Component ===
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // === Real-time Auth Listener ===
+  // Load user from localStorage on mount (persists across refreshes + tabs)
   useEffect(() => {
-    // Initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error);
-      } else {
-        setUser(mapSupabaseUser(session?.user ?? null));
+    try {
+      const saved = localStorage.getItem('r3alm_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setUser(parsed);
       }
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.email);
-      setUser(mapSupabaseUser(session?.user ?? null));
-      setLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    } catch (err) {
+      console.error('Failed to load user from storage', err);
+      localStorage.removeItem('r3alm_user');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  // === Sign Up ===
-  const signUp = async (email: string, password: string, metadata: Partial<AppUser> = {}) => {
-    console.log('Signing up:', email);
-    const { error, data } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role: metadata.role || 'USER',
-          ...metadata,
-        },
-      },
-    });
-
-    if (error) {
-      console.error('Sign-up error:', error);
-      throw error;
-    }
-
-    if (data.user) {
-      console.log('Sign-up success:', data.user.email);
-      setUser(mapSupabaseUser(data.user));
-    }
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('r3alm_user', JSON.stringify(userData));
   };
 
-  // === Sign In ===
-  const signIn = async (email: string, password: string) => {
-    console.log('Signing in:', email);
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error('Sign-in error:', error);
-      throw error;
-    }
-
-    if (data.user) {
-      console.log('Sign-in success:', data.user.email);
-      setUser(mapSupabaseUser(data.user));
-    }
-  };
-
-  // === Sign Out ===
-  const signOut = async () => {
-    console.log('Signing out');
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign-out error:', error);
-      throw error;
-    }
+  const logout = () => {
     setUser(null);
+    localStorage.removeItem('r3alm_user');
   };
 
-  // === Update Role (Admin only) ===
-  const updateRole = async (role: Role) => {
-    if (!user) throw new Error('No user logged in');
-
-    console.log('Updating role to:', role);
-    const { error } = await supabase.auth.updateUser({
-      data: { role },
-    });
-
-    if (error) {
-      console.error('Update role error:', error);
-      throw error;
-    }
-
-    setUser((prev) => (prev ? { ...prev, role } : null));
-  };
-
-  // === Context Value ===
-  const value: AuthContextValue = {
-    user,
-    loading,
-    signUp,
-    signIn,
-    signOut,
-    updateRole,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-// === Custom Hook ===
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  // Prevent flash of unprotected content
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#121212]">
+        <div className="text-4xl font-bold gradient-text loading-dots">R3ALM</div>
+      </div>
+    );
   }
-  return context;
-};
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
