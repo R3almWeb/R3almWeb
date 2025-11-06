@@ -123,7 +123,6 @@ export function WaitlistDetail() {
                 />
                 <button
                   type="button"
-                  type="button"
                   onClick={handleSignup}
                   disabled={signedUp || loading}
                   className="px-8 py-3 bg-[#FFD700] text-[#121212] rounded-lg hover:bg-[#FFA500] transition-all duration-300 hover-glow button-magnetic flex items-center space-x-2 disabled:opacity-50"
