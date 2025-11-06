@@ -1,45 +1,56 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { Loader2 } from 'lucide-react'
+// src/components/ProtectedRoute.tsx
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  requiredRole?: 'admin' | 'editor' | 'user'
+  children: React.ReactNode;
+  requiredRole?: 'EDITOR' | 'ADMIN';
 }
 
-export function ProtectedRoute({ children, requiredRole = 'user' }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
+export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#121212]">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 text-[#00BFFF] animate-spin mx-auto mb-4" />
-          <p className="text-white">Loading...</p>
-        </div>
+      <div className="flex h-screen items-center justify-center bg-[#121212]">
+        <div className="text-4xl font-bold gradient-text loading-dots">Loading Admin...</div>
       </div>
-    )
+    );
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    // Redirect to login BUT remember where they were trying to go
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const roleHierarchy = { admin: 3, editor: 2, user: 1 }
-  const userLevel = roleHierarchy[user.role]
-  const requiredLevel = roleHierarchy[requiredRole]
+  if (requiredRole) {
+    const roleHierarchy = {
+      USER: 1,
+      EDITOR: 2,
+      ADMIN: 3,
+    };
+    const userRoleLevel = roleHierarchy[user.role as keyof typeof roleHierarchy] || 0;
+    const requiredLevel = roleHierarchy[requiredRole];
 
-  if (userLevel < requiredLevel) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#121212]">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Access Denied</h1>
-          <p className="text-gray-400">You don't have permission to access this page.</p>
+    if (userRoleLevel < requiredLevel) {
+      return (
+        <div className="flex h-screen items-center justify-center bg-[#121212]">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-red-500 mb-4">Access Denied</h1>
+            <p className="text-xl text-gray-400">You need {requiredRole} privileges</p>
+            <button
+              onClick={() => window.history.back()}
+              className="mt-8 px-6 py-3 bg-cyan-600 rounded-full hover:scale-105 transition-all"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
-      </div>
-    )
+      );
+    }
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
