@@ -27,8 +27,8 @@ const Login: React.FC<LoginProps> = () => {
     if (authError) {
       setError(authError.message);
     } else if (data.user) {
-      // Successful login - redirect to dashboard (or update AuthContext if integrated)
-      navigate('/dashboard');
+      // Successful login - redirect to admin dashboard (or update AuthContext if integrated)
+      navigate('/admin/dashboard');
     }
 
     setLoading(false);
