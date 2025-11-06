@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import DeleteModal from '../DeleteModal';
+import DeleteModal from '../../../components/DeleteModal';
 
 interface Category {
   id: string;
