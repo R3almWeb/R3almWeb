@@ -2,21 +2,86 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  HomeIcon,
-  InformationCircleIcon,
-  CubeIcon,
-  PencilSquareIcon,
-  QuestionMarkCircleIcon,
-  ClockIcon,
-  EnvelopeIcon,
-  HomeModernIcon,
-  DocumentTextIcon,
-  UsersIcon,
-  Cog6ToothIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from '@heroicons/react/24/outline';
+
+// Inline Heroicons (no external package needed)
+const HomeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+  </svg>
+);
+
+const InformationCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const CubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+  </svg>
+);
+
+const PencilSquareIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+);
+
+const QuestionMarkCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 1.763-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const ClockIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const EnvelopeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const HomeModernIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h-4m-6 0H5a2 2 0 002-2v-4a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 002 2z" />
+  </svg>
+);
+
+const DocumentTextIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+
+const UsersIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H9a2 2 0 01-2-2v-1a6 6 0 0112 0v1a2 2 0 01-2 2zm-6-4a6 6 0 00-6 6h12a6 6 0 00-6-6z" />
+  </svg>
+);
+
+const Cog6ToothIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const ChevronLeftIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+const ChevronRightIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+);
 
 export const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -58,7 +123,6 @@ export const Navbar = () => {
       <nav
         className={`fixed top-0 left-0 h-full bg-gray-950 border-r border-gray-800 z-50 transition-all duration-300 ease-in-out flex flex-col font-['Inter_var',system-ui,sans-serif]
           ${collapsed ? 'w-20' : 'w-64'}
-          lg:w-64
         `}
       >
         {/* Header with toggle */}
@@ -72,7 +136,7 @@ export const Navbar = () => {
           </h1>
           <button
             onClick={toggleCollapse}
-            className="text-gray-400 hover:text-white transition-all lg:block"
+            className="text-gray-400 hover:text-white transition-all"
             aria-label="Toggle menu"
           >
             {collapsed ? <ChevronRightIcon className="w-6 h-6" /> : <ChevronLeftIcon className="w-6 h-6" />}
@@ -89,7 +153,7 @@ export const Navbar = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium
+                    className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium relative block w-full
                       ${isActive ? 'bg-cyan-500/10 text-cyan-400 shadow-lg shadow-cyan-500/20' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'}
                     `}
                     onClick={() => window.innerWidth < 1024 && setCollapsed(true)}
@@ -99,7 +163,7 @@ export const Navbar = () => {
                       {item.label}
                     </span>
                     {collapsed && (
-                      <span className="absolute left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800">
+                      <span className="absolute left-full ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800 pointer-events-none">
                         {item.label}
                       </span>
                     )}
@@ -124,7 +188,7 @@ export const Navbar = () => {
                     <li key={item.path}>
                       <Link
                         to={item.path}
-                        className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium
+                        className={`flex items-center py-2.5 px-3 rounded-xl transition-all group text-sm font-medium relative block w-full
                           ${isActive ? 'bg-cyan-500/10 text-cyan-400 shadow-lg shadow-cyan-500/20' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'}
                         `}
                         onClick={() => window.innerWidth < 1024 && setCollapsed(true)}
@@ -134,7 +198,7 @@ export const Navbar = () => {
                           {item.label}
                         </span>
                         {collapsed && (
-                          <span className="absolute left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800">
+                          <span className="absolute left-full ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 border border-gray-800 pointer-events-none">
                             {item.label}
                           </span>
                         )}
@@ -180,8 +244,11 @@ export const Navbar = () => {
         </div>
       </nav>
 
-      {/* Content padding - prevents overlap */}
-      <div className={`transition-all duration-300 ${collapsed ? 'lg:pl-20' : 'lg:pl-64'} min-h-screen`} />
+      {/* Content padding */}
+      <div 
+        className={`transition-all duration-300 ${collapsed ? 'pl-20' : 'pl-64'} min-h-screen`}
+        aria-hidden="true"
+      />
     </>
   );
 };
