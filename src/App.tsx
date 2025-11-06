@@ -1,10 +1,13 @@
-                                                                                                                import React from 'react';
+// src/App.tsx
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
+
+// === Pages ===
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { VisionMission } from './pages/VisionMission';
@@ -37,6 +40,8 @@ import { RAnalytics } from './pages/waitlist/RAnalytics';
 import { REducation } from './pages/waitlist/REducation';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfService } from './pages/TermsOfService';
+
+// === Admin Pages ===
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { ArticleEditor } from './pages/admin/ArticleEditor';
 import { FAQEditor } from './pages/admin/FAQEditor';
@@ -53,7 +58,10 @@ import { WaitlistManager } from './pages/admin/WaitlistManager';
 import { WaitlistEditor } from './pages/admin/WaitlistEditor';
 import { WaitlistAnalytics } from './pages/admin/WaitlistAnalytics';
 import { EmailSettings } from './pages/admin/EmailSettings';
+
+// === Data ===
 import { divisionsData, productsData } from './data/content';
+
 import './App.css';
 
 function App() {
@@ -65,171 +73,235 @@ function App() {
           <Navbar />
           <main className="pt-20">
             <Routes>
+              {/* === Public Routes === */}
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/about/vision-mission" element={<VisionMission />} />
               <Route path="/about/partnerships" element={<Partnerships />} />
               <Route path="/about/architecture" element={<TechArchitecture />} />
-              
-              {/* Products Overview */}
+
+              {/* === Products === */}
               <Route path="/products" element={<Subsidiaries />} />
-              
-              {/* Detailed Product Pages */}
               <Route path="/products/crowdfund" element={<RCrowdfund />} />
               <Route path="/products/assets" element={<RAssets />} />
               <Route path="/products/trade" element={<RTrade />} />
               <Route path="/products/governance" element={<RGovernance />} />
               <Route path="/products/connect" element={<RConnect />} />
-              
-              {/* Legacy Subsidiary Routes - redirect to products */}
+
+              {/* === Legacy Division Templates === */}
               {Object.entries(divisionsData).map(([key, division]) => (
-                <Route 
+                <Route
                   key={key}
-                  path={`/products/template/${key}`} 
-                  element={<DivisionTemplate data={division} />} 
+                  path={`/products/template/${key}`}
+                  element={<DivisionTemplate data={division} />}
                 />
               ))}
-              
-              {/* Products in Development Routes */}
+
+              {/* === Products in Development === */}
               {Object.entries(productsData).map(([key, product]) => (
-                <Route 
+                <Route
                   key={key}
-                  path={`/products-dev/${key}`} 
-                  element={<ProductTemplate data={product} />} 
+                  path={`/products-dev/${key}`}
+                  element={<ProductTemplate data={product} />}
                 />
               ))}
-              
+
+              {/* === Content === */}
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<Article />} />
               <Route path="/faq" element={<FAQ />} />
+
+              {/* === Waitlist === */}
               <Route path="/waitlist" element={<Waitlist />} />
               <Route path="/waitlist/:id" element={<WaitlistDetail />} />
-              
-              {/* Dedicated Waitlist Division Pages */}
               <Route path="/waitlist/r3alm-ventures/info" element={<RVentures />} />
               <Route path="/waitlist/r3alm-insurance/info" element={<RInsurance />} />
               <Route path="/waitlist/r3alm-lending/info" element={<RLending />} />
               <Route path="/waitlist/r3alm-analytics/info" element={<RAnalytics />} />
               <Route path="/waitlist/r3alm-education/info" element={<REducation />} />
-              
               <Route path="/waitlist/early-access" element={<EarlyAccess />} />
               <Route path="/waitlist/special-pricing" element={<SpecialPricing />} />
               <Route path="/waitlist/beta-testing" element={<BetaTesting />} />
               <Route path="/waitlist/priority-support" element={<PrioritySupport />} />
+
+              {/* === Legal & Contact === */}
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
-              
-              {/* Authentication Routes */}
+
+              {/* === Auth === */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin/dashboard" element={
-                <ProtectedRoute requiredRole="editor">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/articles/new" element={
-                <ProtectedRoute requiredRole="editor">
-                  <ArticleEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/faqs/new" element={
-                <ProtectedRoute requiredRole="editor">
-                  <FAQEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/products" element={
-                <ProtectedRoute requiredRole="editor">
-                  <ProductManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/pipeline" element={
-                <ProtectedRoute requiredRole="editor">
-                  <PipelineManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users" element={
-                <ProtectedRoute requiredRole="admin">
-                  <UserManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/analytics" element={
-                <ProtectedRoute requiredRole="editor">
-                  <UserAnalytics />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users/new" element={
-                <ProtectedRoute requiredRole="admin">
-                  <UserEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users/:id" element={
-                <ProtectedRoute requiredRole="admin">
-                  <UserEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users/:id/edit" element={
-                <ProtectedRoute requiredRole="admin">
-                  <UserEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/settings" element={
-                <ProtectedRoute requiredRole="admin">
-                  <SystemSettings />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/content" element={
-                <ProtectedRoute requiredRole="editor">
-                  <ContentSettings />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/articles/:id" element={
-                <ProtectedRoute requiredRole="editor">
-                  <ArticleEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/faqs/:id" element={
-                <ProtectedRoute requiredRole="editor">
-                  <FAQEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/blog" element={
-                <ProtectedRoute requiredRole="editor">
-                  <BlogManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/faq-manager" element={
-                <ProtectedRoute requiredRole="editor">
-                  <FAQManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/waitlist" element={
-                <ProtectedRoute requiredRole="editor">
-                  <WaitlistManager />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/waitlist/new" element={
-                <ProtectedRoute requiredRole="editor">
-                  <WaitlistEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/waitlist/:id/edit" element={
-                <ProtectedRoute requiredRole="editor">
-                  <WaitlistEditor />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/waitlist-analytics" element={
-                <ProtectedRoute requiredRole="editor">
-                  <WaitlistAnalytics />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/email-settings" element={
-                <ProtectedRoute requiredRole="admin">
-                  <EmailSettings />
-                </ProtectedRoute>
-              } />
+
+              {/* === Admin Routes (Protected) === */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/articles/new"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <ArticleEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/faqs/new"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <FAQEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/products"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <ProductManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/pipeline"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <PipelineManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <UserManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/analytics"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <UserAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users/new"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <UserEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users/:id"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <UserEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users/:id/edit"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <UserEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <SystemSettings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/content"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <ContentSettings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/articles/:id"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <ArticleEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/faqs/:id"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <FAQEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/blog"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <BlogManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/faq-manager"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <FAQManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/waitlist"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <WaitlistManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/waitlist/new"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <WaitlistEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/waitlist/:id/edit"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <WaitlistEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/waitlist-analytics"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <WaitlistAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/email-settings"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <EmailSettings />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
           <Footer />
