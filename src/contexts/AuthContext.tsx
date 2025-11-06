@@ -48,15 +48,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // === Real-time Auth Listener ===
   useEffect(() => {
     // Initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(mapSupabaseUser(session?.user ?? null));
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+      } else {
+        setUser(mapSupabaseUser(session?.user ?? null));
+      }
       setLoading(false);
     });
 
-    // Listen for changes
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.email);
       setUser(mapSupabaseUser(session?.user ?? null));
       setLoading(false);
     });
@@ -68,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // === Sign Up ===
   const signUp = async (email: string, password: string, metadata: Partial<AppUser> = {}) => {
+    console.log('Signing up:', email);
     const { error, data } = await supabase.auth.signUp({
       email,
       password,
@@ -79,25 +85,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    if (error) throw error;
-    if (data.user) setUser(mapSupabaseUser(data.user));
+    if (error) {
+      console.error('Sign-up error:', error);
+      throw error;
+    }
+
+    if (data.user) {
+      console.log('Sign-up success:', data.user.email);
+      setUser(mapSupabaseUser(data.user));
+    }
   };
 
   // === Sign In ===
   const signIn = async (email: string, password: string) => {
+    console.log('Signing in:', email);
     const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
-    if (data.user) setUser(mapSupabaseUser(data.user));
+    if (error) {
+      console.error('Sign-in error:', error);
+      throw error;
+    }
+
+    if (data.user) {
+      console.log('Sign-in success:', data.user.email);
+      setUser(mapSupabaseUser(data.user));
+    }
   };
 
   // === Sign Out ===
   const signOut = async () => {
+    console.log('Signing out');
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      console.error('Sign-out error:', error);
+      throw error;
+    }
     setUser(null);
   };
 
@@ -105,11 +130,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateRole = async (role: Role) => {
     if (!user) throw new Error('No user logged in');
 
+    console.log('Updating role to:', role);
     const { error } = await supabase.auth.updateUser({
       data: { role },
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Update role error:', error);
+      throw error;
+    }
+
     setUser((prev) => (prev ? { ...prev, role } : null));
   };
 
