@@ -1,28 +1,27 @@
 // src/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
-  // === ULTRA-LOCK SCROLL (Works on iOS + Android + Desktop) ===
+  // === BULLETPROOF SCROLL LOCK ===
   useEffect(() => {
     if (isOpen) {
-      // Store current scroll position
       const scrollY = window.scrollY;
-
-      // Lock BOTH html and body
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
     } else {
-      // Restore scroll
       const scrollY = document.body.style.top;
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
@@ -32,7 +31,6 @@ export function Navbar() {
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
 
-    // Cleanup on unmount
     return () => {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
@@ -41,6 +39,12 @@ export function Navbar() {
       document.body.style.width = '';
     };
   }, [isOpen]);
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigate('/');
+  };
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -83,9 +87,7 @@ export function Navbar() {
                   key={item.path}
                   to={item.path}
                   className={`relative px-3 py-2 text-sm font-medium transition-all ${
-                    isActive(item.path)
-                      ? 'text-cyan-400'
-                      : 'text-gray-300 hover:text-white'
+                    isActive(item.path) ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
                   }`}
                 >
                   {item.name}
@@ -115,12 +117,42 @@ export function Navbar() {
                 </div>
               </div>
 
+              {/* Auth Buttons */}
               <Link
                 to="/waitlist"
-                className="ml-8 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-cyan-500/25"
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-cyan-500/25"
               >
                 Join Waitlist
               </Link>
+
+              {/* Show Login OR Admin + Logout */}
+              {!user ? (
+                <Link
+                  to="/login"
+                  state={{ from: location }}
+                  className="px-6 py-3 bg-purple-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-purple-500/25"
+                >
+                  Login
+                </Link>
+              ) : (
+                <>
+                  {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="px-6 py-3 bg-red-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-red-500/25"
+                    >
+                      Admin Portal
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="px-6 py-3 bg-gray-700 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-gray-500/25 flex items-center gap-2"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -135,32 +167,24 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* === MODAL MOBILE MENU (Now with INTERNAL scrolling only) === */}
+      {/* === MOBILE MODAL MENU === */}
       {isOpen && (
         <>
-          {/* Dark Backdrop */}
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Modal Panel - Scrollable ONLY inside */}
-          <div className="fixed inset-x-0 top-0 z-50 bg-[#121212] shadow-2xl flex flex-col max-h-screen">
-            {/* Header */}
+          <div className="fixed inset-x-0 top-0 z-50 bg-[#121212] flex flex-col max-h-screen">
             <div className="flex justify-between items-center p-6 border-b border-white/10 shrink-0">
               <Link to="/" onClick={() => setIsOpen(false)}>
                 <span className="text-2xl font-bold gradient-text">R3ALM</span>
               </Link>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2"
-                aria-label="Close menu"
-              >
+              <button onClick={() => setIsOpen(false)} aria-label="Close">
                 <X size={28} className="text-white" />
               </button>
             </div>
 
-            {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto px-6 py-8">
               <div className="space-y-8">
                 {navItems.map((item) => (
@@ -201,6 +225,37 @@ export function Navbar() {
                 >
                   Join Waitlist
                 </Link>
+
+                {/* Mobile Auth */}
+                {!user ? (
+                  <Link
+                    to="/login"
+                    state={{ from: location }}
+                    onClick={() => setIsOpen(false)}
+                    className="block mt-6 px-8 py-4 bg-purple-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
+                  >
+                    Login
+                  </Link>
+                ) : (
+                  <>
+                    {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                      <Link
+                        to="/admin/dashboard"
+                        onClick={() => setIsOpen(false)}
+                        className="block mt-6 px-8 py-4 bg-red-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
+                      >
+                        Admin Portal
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full mt-6 px-8 py-4 bg-gray-700 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <LogOut size={20} />
+                      Logout
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
