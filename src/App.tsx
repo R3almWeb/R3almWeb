@@ -58,6 +58,10 @@ import { WaitlistManager } from './pages/admin/WaitlistManager';
 import { WaitlistEditor } from './pages/admin/WaitlistEditor';
 import { WaitlistAnalytics } from './pages/admin/WaitlistAnalytics';
 import { EmailSettings } from './pages/admin/EmailSettings';
+// New imports for expanded content management
+import { PageManager } from './pages/admin/PageManager';
+import { MediaManager } from './pages/admin/MediaManager';
+import { CategoryManager } from './pages/admin/CategoryManager';
 
 // === Data ===
 import { divisionsData, productsData } from './data/content';
@@ -259,6 +263,31 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="EDITOR">
                     <FAQManager />
+                  </ProtectedRoute>
+                }
+              />
+              {/* New routes for expanded content management */}
+              <Route
+                path="/admin/pages"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <PageManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/media"
+                element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <MediaManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/categories"
+                element={
+                  <ProtectedRoute requiredRole="EDITOR">
+                    <CategoryManager />
                   </ProtectedRoute>
                 }
               />
