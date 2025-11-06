@@ -1,7 +1,7 @@
 // src/pages/admin/Dashboard.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, FileText, HelpCircle, Calendar, Package, BarChart3, Activity, Clock } from 'lucide-react';
+import { Users, FileText, HelpCircle, Calendar, Package, BarChart3, Activity, Clock, Settings } from 'lucide-react';
 import { articles } from '../../data/articles';
 import { faqData } from '../../data/faq';
 // Placeholder data - replace with Supabase queries in production
