@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Session, User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { supabase, supabaseUrl } from '../lib/supabase'
 import { Database } from '../types/supabase'
 
 type Profile = Database['public']['Tables']['profiles']['Row'] | null
@@ -42,21 +42,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // Check active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check active session with validation
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
       setSession(session)
       setUser(session?.user ?? null)
+      
       if (session?.user) {
-        fetchProfile(session.user.id)
+        await fetchProfile(session.user.id)
       } else {
         setProfile(null)
       }
       setLoading(false)
-    })
+    }
+
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth change event:', event) // Debug log
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -108,11 +113,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signOut({ scope: 'local' })
     if (error) throw error
 
-    // Optional: Force clear localStorage entry if persists (dev safety)
+    // Force clear localStorage entry if persists (dev safety)
     if (typeof window !== 'undefined') {
       const projectRef = supabaseUrl.split('/').pop() // Extract project ID from URL
       localStorage.removeItem(`sb-${projectRef}-auth-token`)
+      // Also clear any other potential keys
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-')) {
+          localStorage.removeItem(key)
+        }
+      })
     }
+    console.log('Logout completed, states cleared') // Debug log
   }
 
   const updateProfile = async (updates: Partial<Database['public']['Tables']['profiles']['Update']>) => {
