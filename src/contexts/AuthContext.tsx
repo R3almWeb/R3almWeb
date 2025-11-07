@@ -73,54 +73,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Single useEffect for auth state management via onAuthStateChange (handles initial + changes)
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth event:', event, !!session?.user); // Debug log for troubleshooting
-      try {
-        // 10s timeout for auth changes (including profile fetches)
-        const controller = new AbortController();
-        timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        if (event === 'INITIAL_SESSION') {
-          // Handle initial load: Fetch profile if session exists, then resolve loading
-          if (session?.user) {
-            const profile = await fetchUserProfile(session.user);
-            setUser(profile);
-          } else {
-            setUser(null);
-          }
-          setLoading(false);
-          return; // Exit early for initial session
-        }
-
-        if (event === 'SIGNED_IN' && session?.user) {
-          const profile = await fetchUserProfile(session.user);
-          setUser(profile);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        } else if (session?.user && (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
-          // Refresh profile on token/user updates
-          const profile = await fetchUserProfile(session.user);
-          setUser(profile);
-        } else if (!session?.user) {
+      if (event === 'INITIAL_SESSION') {
+        // Handle initial load synchronously: Set temp user + resolve loading immediately
+        if (session?.user) {
+          const tempProfile: Profile = {
+            id: session.user.id,
+            email: session.user.email || '',
+            role: 'USER', // Temporary default; full role fetched async
+            full_name: null,
+            avatar_url: null,
+          };
+          setUser(tempProfile);
+          // Async fetch full profile without blocking
+          fetchUserProfile(session.user).then((profile) => {
+            if (profile) setUser(profile);
+          }).catch((err) => {
+            console.error('Initial profile fetch error:', err);
+            // Retain temp profile on error
+          });
+        } else {
           setUser(null);
         }
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('Auth state change error:', error);
-        }
+        setLoading(false);
+        return; // Exit early for initial session
+      }
+
+      // Handle other events synchronously
+      if (event === 'SIGNED_IN' && session?.user) {
+        const tempProfile: Profile = {
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'USER', // Temporary default
+          full_name: null,
+          avatar_url: null,
+        };
+        setUser(tempProfile);
+        // Async full profile fetch
+        fetchUserProfile(session.user).then((profile) => {
+          if (profile) setUser(profile);
+        }).catch(console.error);
+      } else if (event === 'SIGNED_OUT') {
         setUser(null);
-      } finally {
-        clearTimeout(timeoutId);
+      } else if (session?.user && (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
+        const tempProfile: Profile = {
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'USER', // Temporary default
+          full_name: null,
+          avatar_url: null,
+        };
+        setUser(tempProfile);
+        // Async full profile fetch
+        fetchUserProfile(session.user).then((profile) => {
+          if (profile) setUser(profile);
+        }).catch(console.error);
+      } else if (!session?.user) {
+        setUser(null);
       }
     });
 
     return () => {
       subscription.unsubscribe();
-      clearTimeout(timeoutId);
     };
   }, []);
 
