@@ -67,70 +67,81 @@ export function Navbar() {
     { name: 'R3alm Connect', path: '/products/connect' },
   ];
 
+  // Robust auth check: Treat as logged out if no user or no user.id
+  const isAuthenticated = user && user.id;
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#121212]/90 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform">
-                R3
-              </div>
-              <span className="text-2xl font-bold gradient-text">R3ALM</span>
-            </Link>
-
-            {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`relative px-3 py-2 text-sm font-medium transition-all ${
-                    isActive(item.path) ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
-                  }`}
-                >
-                  {item.name}
-                  {isActive(item.path) && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400"></span>
-                  )}
-                </Link>
-              ))}
-
-              {/* Products Dropdown */}
-              <div className="relative group">
-                <button className="text-gray-300 hover:text-white text-sm font-medium px-3 py-2 flex items-center gap-1">
-                  Products <span className="text-xs">▼</span>
-                </button>
-                <div className="absolute top-full left-0 mt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 glass-effect rounded-lg shadow-2xl border border-white/10 p-2">
-                  {productItems.map((product) => (
+      {/* === MOBILE MODAL MENU === */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="fixed inset-y-0 right-0 z-50 w-80 bg-[#121212] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <h1 className="text-2xl font-bold text-white">R3ALM</h1>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <nav className="p-6">
+              <ul className="space-y-4">
+                {navItems.map((item) => (
+                  <li key={item.path}>
                     <Link
-                      key={product.path}
-                      to={product.path}
-                      className={`block px-4 py-3 text-sm rounded-md hover:bg-white/5 transition-all ${
-                        isActive(product.path) ? 'text-cyan-400' : 'text-gray-300'
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`block text-2xl font-medium transition-all ${
+                        isActive(item.path) ? 'text-cyan-400' : 'text-gray-300'
                       }`}
                     >
-                      {product.name}
+                      {item.name}
                     </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Auth Buttons */}
+                  </li>
+                ))}
+                <li>
+                  <details className="group">
+                    <summary className="cursor-pointer text-xl font-semibold text-gray-300 group-open:text-cyan-400">
+                      Products
+                    </summary>
+                    <ul className="mt-2 space-y-2 ml-4">
+                      {productItems.map((product) => (
+                        <li key={product.path}>
+                          <Link
+                            to={product.path}
+                            onClick={() => setIsOpen(false)}
+                            className={`block text-xl ${
+                              isActive(product.path) ? 'text-cyan-400' : 'text-gray-300'
+                            }`}
+                          >
+                            {product.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </li>
+              </ul>
               <Link
                 to="/waitlist"
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-cyan-500/25"
+                onClick={() => setIsOpen(false)}
+                className="block mt-10 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
               >
                 Join Waitlist
               </Link>
-
-              {/* Show Login OR Admin + Logout */}
-              {!user ? (
+              {/* Mobile Auth */}
+              {!isAuthenticated ? (
                 <Link
                   to="/login"
-                  state={{ from: location }}
-                  className="px-6 py-3 bg-purple-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-purple-500/25"
+                  onClick={() => setIsOpen(false)}
+                  className="block mt-6 px-8 py-4 bg-purple-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
                 >
                   Login
                 </Link>
@@ -139,77 +150,75 @@ export function Navbar() {
                   {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
                     <Link
                       to="/admin/dashboard"
-                      className="px-6 py-3 bg-red-600 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-red-500/25"
+                      onClick={() => setIsOpen(false)}
+                      className="block mt-6 px-8 py-4 bg-red-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
                     >
                       Admin Portal
                     </Link>
                   )}
                   <button
                     onClick={handleLogout}
-                    className="px-6 py-3 bg-gray-700 rounded-full font-semibold hover:scale-105 transition-all shadow-lg hover:shadow-gray-500/25 flex items-center gap-2"
+                    className="block mt-6 px-8 py-4 bg-red-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
                   >
-                    <LogOut size={18} />
                     Logout
                   </button>
                 </>
               )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-white"
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+            </nav>
           </div>
         </div>
-      </nav>
+      )}
 
-      {/* === MOBILE MODAL MENU === */}
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
-            onClick={() => setIsOpen(false)}
-          />
-
-          <div className="fixed inset-x-0 top-0 z-50 bg-[#121212] flex flex-col max-h-screen">
-            <div className="flex justify-between items-center p-6 border-b border-white/10 shrink-0">
-              <Link to="/" onClick={() => setIsOpen(false)}>
-                <span className="text-2xl font-bold gradient-text">R3ALM</span>
+      {/* === DESKTOP NAVBAR === */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-md border-b border-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center space-x-2">
+                <svg
+                  className="h-8 w-8 text-cyan-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span className="text-xl font-bold text-white">R3ALM</span>
               </Link>
-              <button onClick={() => setIsOpen(false)} aria-label="Close">
-                <X size={28} className="text-white" />
-              </button>
             </div>
-
-            <div className="flex-1 overflow-y-auto px-6 py-8">
-              <div className="space-y-8">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`block text-2xl font-medium transition-all ${
-                      isActive(item.path) ? 'text-cyan-400' : 'text-gray-300'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-
-                <div className="pt-6">
-                  <p className="text-sm font-semibold text-gray-400 mb-4">Products</p>
-                  <div className="space-y-4 pl-4">
+            <nav className="hidden md:flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`transition-all duration-200 relative ${
+                    isActive(item.path)
+                      ? 'text-cyan-400'
+                      : 'text-gray-300 hover:text-white'
+                  } after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-cyan-400 after:transition-all after:duration-300 hover:after:w-full ${
+                    isActive(item.path) ? 'after:w-full' : ''
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <details className="group relative">
+                <summary className="cursor-pointer text-gray-300 hover:text-white font-medium transition-all">
+                  Products
+                </summary>
+                <div className="absolute left-0 mt-2 w-64 bg-[#121212] rounded-lg shadow-xl border border-gray-800/50 opacity-0 invisible group-open:opacity-100 group-open:visible transition-all duration-200 z-50">
+                  <div className="py-2">
                     {productItems.map((product) => (
                       <Link
                         key={product.path}
                         to={product.path}
-                        onClick={() => setIsOpen(false)}
-                        className={`block text-xl ${
-                          isActive(product.path) ? 'text-cyan-400' : 'text-gray-300'
+                        className={`block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition-all ${
+                          isActive(product.path) ? 'text-cyan-400 bg-gray-800' : ''
                         }`}
                       >
                         {product.name}
@@ -217,22 +226,19 @@ export function Navbar() {
                     ))}
                   </div>
                 </div>
-
-                <Link
-                  to="/waitlist"
-                  onClick={() => setIsOpen(false)}
-                  className="block mt-10 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
-                >
-                  Join Waitlist
-                </Link>
-
-                {/* Mobile Auth */}
-                {!user ? (
+              </details>
+              <Link
+                to="/waitlist"
+                className="hidden md:inline-flex px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-sm hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg hover:shadow-xl"
+              >
+                Join Waitlist
+              </Link>
+              {/* Desktop Auth */}
+              <div className="flex items-center space-x-4">
+                {!isAuthenticated ? (
                   <Link
                     to="/login"
-                    state={{ from: location }}
-                    onClick={() => setIsOpen(false)}
-                    className="block mt-6 px-8 py-4 bg-purple-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
+                    className="px-4 py-2 bg-purple-600 rounded-full font-bold text-sm hover:bg-purple-500 transition-all"
                   >
                     Login
                   </Link>
@@ -241,26 +247,32 @@ export function Navbar() {
                     {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
                       <Link
                         to="/admin/dashboard"
-                        onClick={() => setIsOpen(false)}
-                        className="block mt-6 px-8 py-4 bg-red-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
+                        className="px-4 py-2 bg-red-600 rounded-full font-bold text-sm hover:bg-red-500 transition-all"
                       >
                         Admin Portal
                       </Link>
                     )}
                     <button
                       onClick={handleLogout}
-                      className="w-full mt-6 px-8 py-4 bg-gray-700 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2"
+                      className="px-4 py-2 bg-red-600 rounded-full font-bold text-sm hover:bg-red-500 transition-all"
                     >
-                      <LogOut size={20} />
                       Logout
                     </button>
                   </>
                 )}
               </div>
+            </nav>
+            <div className="flex items-center md:hidden">
+              <button
+                onClick={() => setIsOpen(true)}
+                className="text-gray-400 hover:text-white p-1"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </header>
     </>
   );
 }
