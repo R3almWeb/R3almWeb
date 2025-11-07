@@ -71,74 +71,111 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Single useEffect for auth state management via onAuthStateChange (handles initial + changes)
+  // Create temporary profile from Supabase user (for quick UI sync)
+  const createTempProfile = (supabaseUser: User): Profile => ({
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    role: 'USER', // Default; updated async from DB
+    full_name: null,
+    avatar_url: null,
+  });
+
+  // Initial session check with refresh validation and timeout
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let aborted = false;
+
+    const checkInitialSession = async () => {
+      try {
+        // 10s timeout for initial session
+        const controller = new AbortController();
+        timeoutId = setTimeout(() => {
+          controller.abort();
+          aborted = true;
+        }, 10000);
+
+        // Use refreshSession to validate/refresh any cached session
+        const { data, error } = await supabase.auth.refreshSession().signal(controller.signal);
+
+        if (error && !aborted) {
+          console.warn('Initial refreshSession error (expected post-logout):', error.message);
+          // Force clear any cached invalid session
+          await supabase.auth.signOut();
+        }
+
+        if (data?.session?.user && !aborted) {
+          console.log('Initial valid session found:', data.session.user.email); // Debug
+          const tempProfile = createTempProfile(data.session.user);
+          setUser(tempProfile);
+          // Async full profile fetch without blocking loading
+          fetchUserProfile(data.session.user)
+            .then((profile) => {
+              if (profile) setUser(profile);
+            })
+            .catch((err) => {
+              console.error('Initial profile fetch error:', err);
+              // Retain temp on error
+            });
+        } else {
+          console.log('No valid initial session'); // Debug
+          setUser(null);
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Initial session check failed:', error);
+        }
+        if (!aborted) {
+          setUser(null);
+        }
+      } finally {
+        clearTimeout(timeoutId);
+        setLoading(false);
+      }
+    };
+
+    checkInitialSession();
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // Real-time auth state listener (for changes after initial load)
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth event:', event, !!session?.user); // Debug log for troubleshooting
       if (event === 'INITIAL_SESSION') {
-        // Handle initial load synchronously: Set temp user + resolve loading immediately
-        if (session?.user) {
-          const tempProfile: Profile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            role: 'USER', // Temporary default; full role fetched async
-            full_name: null,
-            avatar_url: null,
-          };
-          setUser(tempProfile);
-          // Async fetch full profile without blocking
-          fetchUserProfile(session.user).then((profile) => {
-            if (profile) setUser(profile);
-          }).catch((err) => {
-            console.error('Initial profile fetch error:', err);
-            // Retain temp profile on error
-          });
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
-        return; // Exit early for initial session
+        // Ignore - handled by initial check to avoid duplication
+        return;
       }
 
-      // Handle other events synchronously
+      // Handle events synchronously
       if (event === 'SIGNED_IN' && session?.user) {
-        const tempProfile: Profile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          role: 'USER', // Temporary default
-          full_name: null,
-          avatar_url: null,
-        };
+        const tempProfile = createTempProfile(session.user);
         setUser(tempProfile);
         // Async full profile fetch
-        fetchUserProfile(session.user).then((profile) => {
-          if (profile) setUser(profile);
-        }).catch(console.error);
+        fetchUserProfile(session.user)
+          .then((profile) => {
+            if (profile) setUser(profile);
+          })
+          .catch(console.error);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       } else if (session?.user && (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
-        const tempProfile: Profile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          role: 'USER', // Temporary default
-          full_name: null,
-          avatar_url: null,
-        };
+        const tempProfile = createTempProfile(session.user);
         setUser(tempProfile);
         // Async full profile fetch
-        fetchUserProfile(session.user).then((profile) => {
-          if (profile) setUser(profile);
-        }).catch(console.error);
+        fetchUserProfile(session.user)
+          .then((profile) => {
+            if (profile) setUser(profile);
+          })
+          .catch(console.error);
       } else if (!session?.user) {
         setUser(null);
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
@@ -186,12 +223,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error: signOutError } = await supabase.auth.signOut();
       if (signOutError) throw signOutError;
 
-      // Immediately confirm and sync state after signOut
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.warn('Post-logout session check error:', sessionError);
+      // Confirm with refreshSession for extra validation
+      const { data, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.warn('Post-logout refresh error (expected):', refreshError.message);
       }
-      if (session?.user) {
+      if (data?.session?.user) {
         console.warn('Session still active after logout - forcing null');
       }
       setUser(null); // Explicitly null user to prevent persistence
@@ -206,9 +243,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshSession = async (): Promise<void> => {
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const profile = await fetchUserProfile(session.user);
+      const { data } = await supabase.auth.refreshSession();
+      if (data?.session?.user) {
+        const profile = await fetchUserProfile(data.session.user);
         setUser(profile);
       } else {
         setUser(null);
@@ -240,3 +277,7 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export { AuthContext };
+
+export default AuthProvider;

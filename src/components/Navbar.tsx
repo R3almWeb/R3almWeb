@@ -40,10 +40,15 @@ export function Navbar() {
     };
   }, [isOpen]);
 
-  const handleLogout = () => {
-    logout();
-    setIsOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setIsOpen(false);
+      navigate('/');
+    }
   };
 
   const navItems = [
@@ -164,8 +169,16 @@ export function Navbar() {
                   <button
                     onClick={handleLogout}
                     className="block mt-6 px-8 py-4 bg-red-600 rounded-full font-bold text-center text-lg hover:scale-105 transition-all shadow-lg"
+                    disabled={loading}
                   >
-                    Logout
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin inline mr-2" />
+                        Logging out...
+                      </>
+                    ) : (
+                      'Logout'
+                    )}
                   </button>
                 </>
               )}
@@ -265,8 +278,16 @@ export function Navbar() {
                     <button
                       onClick={handleLogout}
                       className="px-4 py-2 bg-red-600 rounded-full font-bold text-sm hover:bg-red-500 transition-all"
+                      disabled={loading}
                     >
-                      Logout
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin inline mr-1" />
+                          Logging out...
+                        </>
+                      ) : (
+                        'Logout'
+                      )}
                     </button>
                   </>
                 )}
