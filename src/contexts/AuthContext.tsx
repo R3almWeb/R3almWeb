@@ -192,8 +192,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async (): Promise<void> => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
+
+      // Immediately confirm and sync state after signOut
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.warn('Post-logout session check error:', sessionError);
+      }
+      if (session?.user) {
+        console.warn('Session still active after logout - forcing null');
+      }
+      setUser(null); // Explicitly null user to prevent persistence
     } catch (error: any) {
       console.error('Logout error:', error);
       throw new Error(error.message || 'Logout failed');
