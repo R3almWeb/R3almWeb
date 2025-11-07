@@ -10,7 +10,8 @@ import {
   Calendar, 
   MessageCircle, 
   Shield, 
-  ChevronLeft 
+  ChevronLeft,
+  X 
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -42,7 +43,7 @@ export function Sidebar({ isCollapsed, toggleCollapse, isMobileOpen, toggleMobil
       ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
       overflow-y-auto
     `}>
-      {/* Logo */}
+      {/* Logo & Controls */}
       <div className="p-4 border-b border-[#333] flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="h-8 w-8 bg-[#00BFFF] rounded-lg flex items-center justify-center">
@@ -52,14 +53,24 @@ export function Sidebar({ isCollapsed, toggleCollapse, isMobileOpen, toggleMobil
             <span className="text-xl font-bold text-white transition-all">Capital R3alm</span>
           )}
         </Link>
-        <button
-          onClick={toggleCollapse}
-          className="lg:block hidden p-1 rounded-lg hover:bg-[#2A2A2A] transition-colors"
-        >
-          <ChevronLeft 
-            className={`h-5 w-5 text-gray-400 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} 
-          />
-        </button>
+        <div className="flex items-center space-x-2">
+          {/* Mobile Close Button */}
+          <button
+            onClick={toggleMobile}
+            className="lg:hidden p-1 rounded-lg hover:bg-[#2A2A2A] transition-colors"
+          >
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
+          {/* Desktop Collapse Button */}
+          <button
+            onClick={toggleCollapse}
+            className="lg:block hidden p-1 rounded-lg hover:bg-[#2A2A2A] transition-colors"
+          >
+            <ChevronLeft 
+              className={`h-5 w-5 text-gray-400 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} 
+            />
+          </button>
+        </div>
       </div>
 
       {/* Navigation Menu */}
@@ -78,6 +89,7 @@ export function Sidebar({ isCollapsed, toggleCollapse, isMobileOpen, toggleMobil
               ${isCollapsed ? 'justify-center' : ''}
             `}
             title={isCollapsed ? item.label : ''}
+            onClick={isMobileOpen ? toggleMobile : undefined}
           >
             <item.icon className={`h-5 w-5 flex-shrink-0 ${isActive(item.path) ? 'text-[#00BFFF]' : ''}`} />
             {!isCollapsed && <span className="text-sm font-medium">{item.label}</span>}
@@ -105,6 +117,7 @@ export function Sidebar({ isCollapsed, toggleCollapse, isMobileOpen, toggleMobil
                 ${isCollapsed ? 'justify-center' : ''}
               `}
               title={isCollapsed ? 'Admin Dashboard' : ''}
+              onClick={isMobileOpen ? toggleMobile : undefined}
             >
               <Shield className={`h-5 w-5 flex-shrink-0 ${location.pathname.startsWith('/admin') ? 'text-[#00BFFF]' : ''}`} />
               {!isCollapsed && <span className="text-sm font-medium">Admin Dashboard</span>}

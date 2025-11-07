@@ -1,7 +1,8 @@
 // src/pages/admin/Dashboard.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, FileText, HelpCircle, Calendar, Package, BarChart3, Activity, Clock, Settings } from 'lucide-react';
+import { Users, FileText, HelpCircle, Calendar, Package, BarChart3, Activity, Clock, Settings, UserPlus } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { articles } from '../../data/articles';
 import { faqData } from '../../data/faq';
 // Placeholder data - replace with Supabase queries in production
@@ -9,6 +10,20 @@ const usersData = [
   { id: 1, email: 'admin@r3alm.com', role: 'ADMIN' },
   { id: 2, email: 'editor@r3alm.com', role: 'EDITOR' },
   { id: 3, email: 'user@r3alm.com', role: 'USER' }
+];
+// Placeholder user growth data for the chart
+const userGrowthData = [
+  { month: 'Jan', users: 120 },
+  { month: 'Feb', users: 200 },
+  { month: 'Mar', users: 350 },
+  { month: 'Apr', users: 450 },
+  { month: 'May', users: 620 },
+  { month: 'Jun', users: 780 },
+  { month: 'Jul', users: 950 },
+  { month: 'Aug', users: 1150 },
+  { month: 'Sep', users: 1420 },
+  { month: 'Oct', users: 1680 },
+  { month: 'Nov', users: 1950 },
 ];
 const recentActivity = [
   { id: 1, action: 'New article published', user: 'Editor', time: '2 hours ago' },
@@ -110,14 +125,26 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* Performance Chart Placeholder */}
+      {/* Performance Chart Section */}
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-[#1E1E1E] rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">User Growth</h2>
-          <div className="h-64 bg-black/20 rounded-lg flex items-center justify-center text-gray-500">
-            {/* Chart placeholder - integrate Chart.js or Recharts later */}
-            Chart coming soon...
-          </div>
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
+            <UserPlus className="h-5 w-5" />
+            <span>User Growth</span>
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={userGrowthData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <XAxis dataKey="month" stroke="#888" />
+              <YAxis stroke="#888" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1E1E1E', border: '1px solid #333', color: '#fff' }}
+                labelStyle={{ color: '#fff' }}
+              />
+              <Legend />
+              <Line type="monotone" dataKey="users" stroke="#00BFFF" strokeWidth={3} dot={{ fill: '#00BFFF', strokeWidth: 2 }} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
         <div className="bg-[#1E1E1E] rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Platform Metrics</h2>
