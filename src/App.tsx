@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { Navbar } from './components/Navbar';
+import Navbar from './components/Navbar'; // Default import for redesigned Navbar
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 
