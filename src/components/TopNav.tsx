@@ -1,6 +1,6 @@
 // src/components/TopNav.tsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Menu, User, LogOut, ChevronDown, Shield } from 'lucide-react';
 
@@ -12,6 +12,17 @@ interface TopNavProps {
 export function TopNav({ toggleMobile, isMobileOpen }: TopNavProps) {
   const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowUserMenu(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-[#333] p-4">
@@ -55,10 +66,7 @@ export function TopNav({ toggleMobile, isMobileOpen }: TopNavProps) {
                     <span>Dashboard</span>
                   </Link>
                   <button
-                    onClick={() => {
-                      logout();
-                      setShowUserMenu(false);
-                    }}
+                    onClick={handleLogout}
                     className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white"
                   >
                     <LogOut className="h-4 w-4" />

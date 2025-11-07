@@ -48,6 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       if (session?.user) {
         fetchProfile(session.user.id)
+      } else {
+        setProfile(null)
       }
       setLoading(false)
     })
@@ -98,8 +100,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
+    // Clear all auth state immediately
+    setUser(null)
+    setSession(null)
+    setProfile(null)
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
     if (error) throw error
+
+    // Optional: Force clear localStorage entry if persists (dev safety)
+    if (typeof window !== 'undefined') {
+      const projectRef = supabaseUrl.split('/').pop() // Extract project ID from URL
+      localStorage.removeItem(`sb-${projectRef}-auth-token`)
+    }
   }
 
   const updateProfile = async (updates: Partial<Database['public']['Tables']['profiles']['Update']>) => {
