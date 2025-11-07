@@ -71,66 +71,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Initial session check with timeout
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const checkSession = async () => {
-      try {
-        // 10s timeout for initial session
-        const controller = new AbortController();
-        timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.warn('Session check error:', error);
-        }
-
-        if (session?.user) {
-          const profile = await fetchUserProfile(session.user);
-          setUser(profile);
-        } else {
-          setUser(null);
-        }
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('Session check failed:', error);
-        }
-        setUser(null);
-      } finally {
-        clearTimeout(timeoutId);
-        setLoading(false);
-      }
-    };
-
-    checkSession();
-
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-  // Auth state listener
+  // Single useEffect for auth state management via onAuthStateChange (handles initial + changes)
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, !!session?.user); // Debug log for troubleshooting
       try {
-        // 10s timeout for auth changes
+        // 10s timeout for auth changes (including profile fetches)
         const controller = new AbortController();
         timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        if (event === 'INITIAL_SESSION') {
+          // Handle initial load: Fetch profile if session exists, then resolve loading
+          if (session?.user) {
+            const profile = await fetchUserProfile(session.user);
+            setUser(profile);
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
+          return; // Exit early for initial session
+        }
 
         if (event === 'SIGNED_IN' && session?.user) {
           const profile = await fetchUserProfile(session.user);
           setUser(profile);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-        } else if (session?.user) {
-          // Refresh profile on other events
+        } else if (session?.user && (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
+          // Refresh profile on token/user updates
           const profile = await fetchUserProfile(session.user);
           setUser(profile);
-        } else {
+        } else if (!session?.user) {
           setUser(null);
         }
       } catch (error: any) {
@@ -140,7 +115,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
       } finally {
         clearTimeout(timeoutId);
-        setLoading(false);
       }
     });
 
