@@ -101,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.warn('Initial refreshSession error (expected post-logout):', error.message);
           // Force clear any cached invalid session
           await supabase.auth.signOut();
+          localStorage.removeItem('supabase.auth.token');
         }
 
         if (data?.session?.user && !aborted) {
