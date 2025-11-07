@@ -1,14 +1,14 @@
 // src/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -67,8 +67,9 @@ export function Navbar() {
     { name: 'R3alm Connect', path: '/products/connect' },
   ];
 
-  // Robust auth check: Treat as logged out if no user or no user.id
-  const isAuthenticated = user && user.id;
+  // Robust auth check: Wait for loading, then verify user.id
+  const isAuthenticated = !loading && user && user.id;
+  const isAdminOrEditor = isAuthenticated && (user.role === 'ADMIN' || user.role === 'EDITOR');
 
   return (
     <>
@@ -137,7 +138,11 @@ export function Navbar() {
                 Join Waitlist
               </Link>
               {/* Mobile Auth */}
-              {!isAuthenticated ? (
+              {loading ? (
+                <div className="mt-6 flex justify-center py-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                </div>
+              ) : !isAuthenticated ? (
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
@@ -147,7 +152,7 @@ export function Navbar() {
                 </Link>
               ) : (
                 <>
-                  {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                  {isAdminOrEditor && (
                     <Link
                       to="/admin/dashboard"
                       onClick={() => setIsOpen(false)}
@@ -235,7 +240,12 @@ export function Navbar() {
               </Link>
               {/* Desktop Auth */}
               <div className="flex items-center space-x-4">
-                {!isAuthenticated ? (
+                {loading ? (
+                  <div className="flex items-center space-x-2 px-2 py-1">
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                    <span className="text-sm text-gray-400">Loading...</span>
+                  </div>
+                ) : !isAuthenticated ? (
                   <Link
                     to="/login"
                     className="px-4 py-2 bg-purple-600 rounded-full font-bold text-sm hover:bg-purple-500 transition-all"
@@ -244,7 +254,7 @@ export function Navbar() {
                   </Link>
                 ) : (
                   <>
-                    {(user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                    {isAdminOrEditor && (
                       <Link
                         to="/admin/dashboard"
                         className="px-4 py-2 bg-red-600 rounded-full font-bold text-sm hover:bg-red-500 transition-all"
