@@ -211,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = memo(() => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 left-0 z-40 w-80 bg-[#121212] shadow-2xl md:hidden"
+            className="fixed inset-y-0 left-0 z-40 w-80 h-screen bg-[#121212] shadow-2xl md:hidden"
             ref={mobileRef}
             role="menu"
             aria-modal="true"
