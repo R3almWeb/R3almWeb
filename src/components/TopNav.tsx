@@ -1,6 +1,6 @@
 // src/components/TopNav.tsx
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Menu, User, LogOut, ChevronDown, Shield } from 'lucide-react';
 
@@ -10,15 +10,14 @@ interface TopNavProps {
 }
 
 export function TopNav({ toggleMobile, isMobileOpen }: TopNavProps) {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
+      // No navigate needed - signOut now reloads the page
       setShowUserMenu(false);
-      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
     }

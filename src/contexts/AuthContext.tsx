@@ -109,22 +109,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setSession(null)
     setProfile(null)
+    setLoading(false)
 
-    const { error } = await supabase.auth.signOut({ scope: 'local' })
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      if (error) throw error
 
-    // Force clear localStorage entry if persists (dev safety)
-    if (typeof window !== 'undefined') {
-      const projectRef = supabaseUrl.split('/').pop() // Extract project ID from URL
-      localStorage.removeItem(`sb-${projectRef}-auth-token`)
-      // Also clear any other potential keys
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-')) {
-          localStorage.removeItem(key)
-        }
-      })
+      // Force clear localStorage entry if persists (dev safety)
+      if (typeof window !== 'undefined') {
+        const projectRef = supabaseUrl.split('/').pop() // Extract project ID from URL
+        localStorage.removeItem(`sb-${projectRef}-auth-token`)
+        // Also clear any other potential keys
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('sb-')) {
+            localStorage.removeItem(key)
+          }
+        })
+      }
+      console.log('Logout completed, states cleared') // Debug log
+    } catch (error) {
+      console.error('Sign out error:', error)
     }
-    console.log('Logout completed, states cleared') // Debug log
+
+    // Force page reload to ensure fresh session check and prevent persistence
+    if (typeof window !== 'undefined') {
+      window.location.reload()
+    }
   }
 
   const updateProfile = async (updates: Partial<Database['public']['Tables']['profiles']['Update']>) => {
